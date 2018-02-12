@@ -1,6 +1,7 @@
 var express = 			require('express');
 var bodyParser = 		require('body-parser');
 var authService = 	require('./authService');
+var path = 				require('path'); // for serving static content
 var accountService = require('./accountService');
 var contactService = require('./contactService');
 
@@ -16,8 +17,6 @@ app.use(function(req, res, next){
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-
 
 
 /*-----------------------------------------------------
@@ -102,6 +101,15 @@ app.get('/getContactList', jsonParser, function (req, res) {
 // 
 
 
+/* --------------- App content endpoint ----------------- */
+// specify path for our static content
+app.use(express.static(path.join(__dirname, 'public')));
+
+// endpoint for static stuff.
+app.get('*', (req, res) => {
+	console.log("  hit app stuff...");
+	res.sendFile(path.join(__dirname, 'public/index.html'));
+});
 
 
 
