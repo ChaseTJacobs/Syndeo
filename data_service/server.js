@@ -4,10 +4,11 @@ var authService = 	require('./authService');
 var path = 				require('path'); // for serving static content
 var accountService = require('./accountService');
 var contactService = require('./contactService');
+var env = 				require('./environment');
 
 var app = express();
 var jsonParser = bodyParser.json({"type":"application/json"});
-var port = 3002;
+var port = 3001;
 
 
 
@@ -103,12 +104,12 @@ app.get('/getContactList', jsonParser, function (req, res) {
 
 /* --------------- App content endpoint ----------------- */
 // specify path for our static content
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, env.path_to_dist)));
 
 // endpoint for static stuff.
 app.get('*', (req, res) => {
-	console.log("  hit app stuff...");
-	res.sendFile(path.join(__dirname, 'public/index.html'));
+	console.log("  hit app stuff with URL: " + req.originalUrl);
+	res.sendFile(path.join(__dirname, env.path_to_dist+'/index.html'));
 });
 
 

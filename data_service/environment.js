@@ -4,4 +4,4 @@ exports.user= "root";
 exports.password="";
 exports.database="dummyDB";
 exports.auth_secret="this functions as a cryptographic key. :) ";
-
+exports.path_to_dist="../../distribution"
