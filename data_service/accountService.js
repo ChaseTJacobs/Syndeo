@@ -44,6 +44,10 @@ exports.login = function(reqBody, callback){
 								console.log("\t\t submitted password \'"+reqBody.pass+"\' != "+queryResult["password"]);
 								callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
 							}
+							else if (false /* do something with queryResult["expiry_date"] */) {
+								// TODO: check account expiry date
+								// callback(true, {'data':"Account has expired due to non-payment", 'status':250}, null);
+							}
 							else { 
 								user_email = queryResult["email"];//reqBody.email;
 								user_id = queryResult["user_id"];//77;
@@ -51,7 +55,6 @@ exports.login = function(reqBody, callback){
 								// 3 - generate JWT
 								authService.generateToken(user_email, user_id, function(err, token) {
 									if (err) {
-										// something went wrong with JWT generation...
 										console.log("\t\t something went wrong with JWT generation...");
 										callback(true, {'data':"something went wrong with JWT generation", 'status':252}, null);
 									}
@@ -69,9 +72,10 @@ exports.login = function(reqBody, callback){
 
 /* Create Account:
 	1) validate user info
+	1.5) encrypt data
 	2) check user doesn't already exist
 	3) insert new user into DB
-	4) respond to client
+	4) generate JWT
 */
 exports.createAccount = function(reqBody, callback){
 	console.log("\t\t IN acctSvc.createAccount: ");
@@ -93,7 +97,6 @@ exports.createAccount = function(reqBody, callback){
 					queryResult = qr[0][0];
 					
 					if(err) {
-						// TODO: Test this isn't just a 'user not found' scenario.
 						console.log("\t\t DB err:  "+err);
 						callback(true, " something went wrong... ", null);
 					}
@@ -102,59 +105,42 @@ exports.createAccount = function(reqBody, callback){
 						
 						if (qr[0].length > 0) {
 							// Email already in use in DB
-							console.log("\t\t requested email \'"+reqBody.email+"\' already .");
-							callback(true, "Incorrect Username or Password.", null);
+							console.log("\t\t requested email \'"+reqBody.email+"\' already in DB.");
+							callback(true, {'data':"an account already exists in connection with this email", 'status':250}, null);
 						}
 						else {
-							if ( !(queryResult["password"] === reqBody.pass /* TODO: compare passwords */)) {
-								console.log("\t\t submitted password \'"+reqBody.pass+"\' != "+queryResult["password"]);
-								callback(true, "Incorrect Username or Password.", null);
-							}
-							else { 
-								user_email = queryResult["email"];//reqBody.email;
-								user_id = queryResult["user_id"];//77;
-								
-								// 3 - generate JWT
-								authService.generateToken(user_email, user_id, function(err, token) {
-									if (err) {
-										// something went wrong with JWT generation...
-										console.log("\t\t something went wrong with JWT generation...");
-										callback(true, "something went wrong with JWT generation...", null);
-									}
-									else {
-										console.log("\t\t Successful Login. Sending user_info: "+queryResult["user_info"]);
-										callback(false, queryResult["user_info"], token);
-									}
-								});								
-							}
+							var userInfo = JSON.stringify(reqBody.userInfo);
+							// TODO: create an expiry date for the account
+							
+							// addUser inserts new user, then returns userId and email for the JWT
+							db.query("Call addUser(?,?,?)",
+										[reqBody.email, reqBody.pass, userInfo],
+										function (error, queryRes) {
+											queryResult = queryRes[0][0];
+											console.log("\t\t \'addUser\' query result: "+JSON.stringify(queryResult));
+											
+											if(error) {
+												console.log("\t\t DB err:  "+error);
+												callback(true, " something went wrong... ", null);
+											}
+											else { 
+												user_email = queryResult["email"];
+												user_id = queryResult["user_id"];
+												
+												// 3 - generate JWT
+												authService.generateToken(user_email, user_id, function(err, token) {
+													if (err) {
+														console.log("\t\t something went wrong with JWT generation...");
+														callback(true, "something went wrong with JWT generation...", null);
+													}
+													else {
+														console.log("\t\t Successful Registration. Sending user_info: "+queryResult["user_info"]);
+														callback(false, queryResult["user_info"], token);
+													}
+												});								
+											}
+										});
 						}
-					}
-				});
-}
-
-
-/* Get User Info:
-	1) validate user info
-	2) Retrieve user info (or not) from DB
-	3) respond to client
-*/
-exports.getUserInfo = function(reqBody, callback){
-	/* 1 - TODO */
-	/* 2 */
-	console.log("\t\t IN acctSvc.getUserInfo: ");
-	
-	db.query("CALL getUserInfo(?,?)", 
-				[reqBody.username, reqBody.password], 
-				function(err, queryResult){
-					/* 3 */
-					if(err){
-						console.log("problems...");
-						callback("Unable to retrieve user info :( ");
-					}else{
-						if(! queryResult[0].length > 0)
-							callback("User doesn't exist >:[ ");
-						else
-							callback(queryResult);//(queryResult[0][0].user_info);
 					}
 				});
 }

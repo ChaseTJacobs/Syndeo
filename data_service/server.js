@@ -64,14 +64,18 @@ app.post('/createAccount', jsonParser, function (req, res) {
 	  console.log("\t error in request body")
 	  return res.sendStatus(400);
   }
-  
-  else{
-		// console.log("~~~~~~ Request Body ~~~~~~");
-		// console.log(JSON.stringify(req.body));
-		// res.send("Thanks!!!");
-		
-		accountService.createAccount(req.body, (result) => res.send(result));
-	}
+  else {
+			accountService.createAccount( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+	  }
 });
 
 
