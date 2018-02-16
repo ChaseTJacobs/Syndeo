@@ -4,20 +4,66 @@ var authService = 	require('./authService');
 
 /* Log In:
 	1) validate user info
+	1.5) Encrypt data
 	2) check user actually exists
 	3) generate JWT
-	4) respond to client
 */
 exports.login = function(reqBody, callback){
 	console.log("\t\t IN acctSvc.login: ");
-	console.log("\t\t req email: "+reqBody.email);//JSON.stringify(reqBody.email));
-	console.log("\t\t req pass:  "+reqBody.pass);//JSON.stringify(reqBody.pass));
+	/* 1 
+		TODO: any validation of reqBody contents???
+			if so, make encryption a callback from that.
+	*/
 	
-	// TODO: ideally, DB query will return user_ID
-	user_email = reqBody.email;
+	/* 1.5
+		TODO: encrypt email, call db.query as callback
+	*/
 	
-	
-	authService.generateToken(user_email, 77, callback);
+	// 2 - check user exists
+	db.query("CALL isUserInDatabase(?)", 
+				[reqBody.email], 
+				function(err, qr){
+					var queryResult = {};
+					queryResult = qr[0][0];
+					
+					if(err) {
+						// TODO: Test this isn't just a 'user not found' scenario.
+						console.log("\t\t DB err:  "+err);
+						callback(true, {'data':"some kind of DB error occurred", 'status':251}, null);
+					}
+					else {
+						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
+						
+						if (qr[0].length == 0 /* empty set */) {
+							// queryResult is the empty set. Email not in DB. do not generate JWT
+							console.log("\t\t requested email \'"+reqBody.email+"\' does not exist.");
+							callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
+						}
+						else {
+							if ( !(queryResult["password"] === reqBody.pass /* TODO: compare passwords */)) {
+								console.log("\t\t submitted password \'"+reqBody.pass+"\' != "+queryResult["password"]);
+								callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
+							}
+							else { 
+								user_email = queryResult["email"];//reqBody.email;
+								user_id = queryResult["user_id"];//77;
+								
+								// 3 - generate JWT
+								authService.generateToken(user_email, user_id, function(err, token) {
+									if (err) {
+										// something went wrong with JWT generation...
+										console.log("\t\t something went wrong with JWT generation...");
+										callback(true, {'data':"something went wrong with JWT generation", 'status':252}, null);
+									}
+									else {
+										console.log("\t\t Successful Login. Sending user_info: "+queryResult["user_info"]);
+										callback(false, {'data':queryResult["user_info"], 'status':150}, token);
+									}
+								});								
+							}
+						}
+					}
+				});
 }
 
 
@@ -29,18 +75,59 @@ exports.login = function(reqBody, callback){
 */
 exports.createAccount = function(reqBody, callback){
 	console.log("\t\t IN acctSvc.createAccount: ");
-	/* 1 - TODO */
-	/* 2 - TODO */
-	/* 3 */
-	db.query("CALL addUser(?,?,?)", 
-				[reqBody.email, reqBody.pass, reqBody.userInfo], 
-				function(err, queryResult){
-					/* 4 */
-					if(err)
-						callback("createAccount unsuccessful :( ");
+
+	/* 1 
+		TODO: any validation of reqBody contents???
+			if so, make encryption a callback from that.
+	*/
+	
+	/* 1.5
+		TODO: encrypt email, call db.query as callback
+	*/
+	
+	// 2 - check user exists
+	db.query("CALL isUserInDatabase(?)", 
+				[reqBody.email], 
+				function(err, qr){
+					var queryResult = {};
+					queryResult = qr[0][0];
+					
+					if(err) {
+						// TODO: Test this isn't just a 'user not found' scenario.
+						console.log("\t\t DB err:  "+err);
+						callback(true, " something went wrong... ", null);
+					}
 					else {
-						console.log("\t\t \'ADDUSER\' query result: "+JSON.stringify(queryResult));
-						callback(queryResult);
+						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
+						
+						if (qr[0].length > 0) {
+							// Email already in use in DB
+							console.log("\t\t requested email \'"+reqBody.email+"\' already .");
+							callback(true, "Incorrect Username or Password.", null);
+						}
+						else {
+							if ( !(queryResult["password"] === reqBody.pass /* TODO: compare passwords */)) {
+								console.log("\t\t submitted password \'"+reqBody.pass+"\' != "+queryResult["password"]);
+								callback(true, "Incorrect Username or Password.", null);
+							}
+							else { 
+								user_email = queryResult["email"];//reqBody.email;
+								user_id = queryResult["user_id"];//77;
+								
+								// 3 - generate JWT
+								authService.generateToken(user_email, user_id, function(err, token) {
+									if (err) {
+										// something went wrong with JWT generation...
+										console.log("\t\t something went wrong with JWT generation...");
+										callback(true, "something went wrong with JWT generation...", null);
+									}
+									else {
+										console.log("\t\t Successful Login. Sending user_info: "+queryResult["user_info"]);
+										callback(false, queryResult["user_info"], token);
+									}
+								});								
+							}
+						}
 					}
 				});
 }

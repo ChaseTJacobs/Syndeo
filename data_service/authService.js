@@ -4,14 +4,17 @@ var env = require('./environment');
 
 exports.generateToken = function(user_email, user_id, callback) {
 	
+	console.log("\t\t\t authSvc.generateToken: ");
+	console.log("\t\t\t  user email: \""+user_email+"\"");
+	console.log("\t\t\t  user id   : \""+user_id+"\"");
+	console.log("\t\t\t using SECRET: \""+env.auth_secret+"\"");
+	
 	// TODO: catch errors for this...
 	var token = jwt.sign( { email: user_email, id : user_id }, env.auth_secret);
 	
-	console.log("\t\t\t authSvc.generateToken: ");
-	console.log("\t\t\t using SECRET: \""+env.auth_secret+"\"");
 	console.log("\t\t\t generated token: \""+token+"\"");
 
-	callback(token, null);
+	callback(null, token);
 }
 
 exports.verifyToken = function(user_sent_token, callback) {

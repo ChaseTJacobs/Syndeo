@@ -25,29 +25,37 @@ app.use(function(req, res, next){
  -----------------------------------------------------*/
 
 // LOG IN
-// EXPECTS: body: {email:"", password:""}
-// RETURNS: header: Authorization: "<token>", body: { what else??? }
+// EXPECTS: body: {email:"", pass:""}
+// RETURNS: header: new JWT, body: { what else??? }
 app.post('/login', jsonParser, function (req, res) {
 	  console.log("\t endpoint: login()");
 	  if (!req.body) {
 		  console.log("\t error in request body")
 		  // TODO: when/why !req.body == false? Do we need to send responses
-		  return res.sendStatus(400);
+		  //return res.sendStatus(400);
+		  res.send({'error':"problem in Request Body"});
 	  }
 	  else {
-		  accountService.login( req.body, function(token, err) {
-			  res.set('Authorization', token);
-			  res.set('Access-Control-Expose-Headers', 'Authorization');
-			  res.send("Login Successful!!!");
-		  });
+			accountService.login( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
 	  }
   }
 );
 
-/*
+
+
+
 // CREATE ACCOUNT
-// EXPECTS: body: {acct_info : {email:"", password:""}, stripe_token? : <???> }
-// RETURNS: same as LOG IN...?
+// EXPECTS: body: {email:"", password:"", userInfo:"{}"}
+// RETURNS: header: new JWT, body: { what else??? }
 app.post('/createAccount', jsonParser, function (req, res) {
   
   console.log("\t endpoint: createAccount()");
@@ -65,7 +73,15 @@ app.post('/createAccount', jsonParser, function (req, res) {
 		accountService.createAccount(req.body, (result) => res.send(result));
 	}
 });
-*/
+
+
+
+
+// MAKE PAYMENT
+// EXPECTS: header: JWT, body: {stripeToken:<???>}
+// RETURNS: body: {message:"???"}
+
+
 
 // GET CONTACT LIST
 // EXPECTS:
