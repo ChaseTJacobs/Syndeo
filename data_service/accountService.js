@@ -109,10 +109,11 @@ exports.createAccount = function(reqBody, callback){
 							callback(true, {'data':"an account already exists in connection with this email", 'status':250}, null);
 						}
 						else {
-							var userInfo = JSON.stringify(reqBody.userInfo);
-							// TODO: create an expiry date for the account
+							
+							// TODO: Implement Stripe API here ------------------------------------------
 							
 							// addUser inserts new user, then returns userId and email for the JWT
+							var userInfo = JSON.stringify(reqBody.userInfo);
 							db.query("Call addUser(?,?,?)",
 										[reqBody.email, reqBody.pass, userInfo],
 										function (error, queryRes) {
