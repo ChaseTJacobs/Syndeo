@@ -27,12 +27,12 @@ exports.login = function(reqBody, callback){
 					queryResult = qr[0][0];
 					
 					if(err) {
-						// TODO: Test this isn't just a 'user not found' scenario.
+						// TODO: what would this even be??
 						console.log("\t\t DB err:  "+err);
 						callback(true, {'data':"some kind of DB error occurred", 'status':251}, null);
 					}
 					else {
-						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
+						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));
 						
 						if (qr[0].length == 0 /* empty set */) {
 							// queryResult is the empty set. Email not in DB. do not generate JWT
@@ -50,7 +50,7 @@ exports.login = function(reqBody, callback){
 							}
 							else { 
 								user_email = queryResult["email"];//reqBody.email;
-								user_id = queryResult["user_id"];//77;
+								user_id = queryResult["id"];//77;
 								
 								// 3 - generate JWT
 								authService.generateToken(user_email, user_id, function(err, token) {
@@ -79,7 +79,6 @@ exports.login = function(reqBody, callback){
 */
 exports.createAccount = function(reqBody, callback){
 	console.log("\t\t IN acctSvc.createAccount: ");
-
 	/* 1 
 		TODO: any validation of reqBody contents???
 			if so, make encryption a callback from that.
@@ -90,6 +89,7 @@ exports.createAccount = function(reqBody, callback){
 	*/
 	
 	// 2 - check user exists
+	var userInfo = JSON.stringify(reqBody.userInfo);
 	db.query("CALL isUserInDatabase(?)", 
 				[reqBody.email], 
 				function(err, qr){
@@ -113,9 +113,9 @@ exports.createAccount = function(reqBody, callback){
 							// TODO: Implement Stripe API here ------------------------------------------
 							
 							// addUser inserts new user, then returns userId and email for the JWT
-							var userInfo = JSON.stringify(reqBody.userInfo);
+							// var userInfo = JSON.stringify(reqBody.userInfo); // moved up
 							db.query("Call addUser(?,?,?)",
-										[reqBody.email, reqBody.pass, userInfo],
+										[reqBody.email, reqBody.pass, userInfo], // stripe_token???
 										function (error, queryRes) {
 											queryResult = queryRes[0][0];
 											console.log("\t\t \'addUser\' query result: "+JSON.stringify(queryResult));
@@ -126,7 +126,7 @@ exports.createAccount = function(reqBody, callback){
 											}
 											else { 
 												user_email = queryResult["email"];
-												user_id = queryResult["user_id"];
+												user_id = queryResult["id"];
 												
 												// 3 - generate JWT
 												authService.generateToken(user_email, user_id, function(err, token) {

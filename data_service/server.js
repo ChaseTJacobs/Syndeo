@@ -21,12 +21,50 @@ app.use(function(req, res, next){
 
 
 /*-----------------------------------------------------
- Endpoints
- -----------------------------------------------------*/
+Endpoints
+- Deleting & Updating ANYTHING should require validation of the user-to-whateverobject relationship
+
+	Account endpoints:
+	- login
+	- createAccount
+	- updateUserInfo
+	- forgotPassword
+	- getUserInfo ???
+	- makePayment ???
+
+	NRM endpoints:
+	- createContact
+	- createActivity
+	- createIIscript
+	- getContactList
+	- getContactInfo // includes numbers
+	- getContactActivities
+	- getContactIIScripts
+	- getIIScriptQs
+	- updateContactInfo(c_id) // includes numbers
+	- updateActivity(a_id)
+	- updateContactIIScript(script_id)
+	- deleteContact(c_id)
+	- deleteActivity(a_id)
+	- deleteIIScript(script_id)
+
+	Module endpoints:
+	- getModuleList
+	- getModuleContent
+	- updateMyModules
+
+	Calendar endpoints:
+	- getActivityList
+
+	Stats endpoints:
+	- getAllCounters
+	- updateGlobalCounters
+
+-----------------------------------------------------*/
 
 // LOG IN
 // EXPECTS: body: {email:"", pass:""}
-// RETURNS: header: new JWT, body: { what else??? }
+// RETURNS: header: new JWT, body: {data: {user info} }
 app.post('/login', jsonParser, function (req, res) {
 	  console.log("\t endpoint: login()");
 	  if (!req.body) {
@@ -51,11 +89,9 @@ app.post('/login', jsonParser, function (req, res) {
 );
 
 
-
-
 // CREATE ACCOUNT
-// EXPECTS: body: {email:"", password:"", userInfo:"{}"}
-// RETURNS: header: new JWT, body: { what else??? }
+// EXPECTS: body: {email:"", pass:"", userInfo:"{}"}
+// RETURNS: header: new JWT, body: {data: {user info} }
 app.post('/createAccount', jsonParser, function (req, res) {
   
   console.log("\t endpoint: createAccount()");
@@ -79,17 +115,9 @@ app.post('/createAccount', jsonParser, function (req, res) {
 });
 
 
-
-
-// MAKE PAYMENT
-// EXPECTS: header: JWT, body: {stripeToken:<???>}
-// RETURNS: body: {message:"???"}
-
-
-
 // GET CONTACT LIST
-// EXPECTS:
-// RETURNS:
+// EXPECTS: header: JWT
+// RETURNS: body: {data: [{contact},{contact}...] }
 app.get('/getContactList', jsonParser, function (req, res) {
 	console.log("\t endpoint: getContactList()");
 	if (!req.body){
@@ -97,29 +125,24 @@ app.get('/getContactList', jsonParser, function (req, res) {
 		return res.sendStatus(400);
 	}
 	else{		
-		contactService.getContactList(req.get('Authorization'), (result) => res.send(result));
+		contactService.getContactList(req.get('Authorization'), (response) => res.send(response));
 	}
 });
 
 
-// getContactInfo – return info on one contact
-// getContactActivities – Return all activities on one contact
-// editContactInfo
-// addActivity
-// editActivity
-// removeActivity
-// createInfoScript
-// deleteInfoScript
-// deleteContact
-
-// getAllActivities – For each contact return getContactActivities
-
-// GET MODULE LIST
-// GET MODULE
-// GET PROFILE
-// UPDATE NOTIFICATION EMAIL
-// CHANGE PASSWORD
-// 
+// CREATE CONTACT
+// EXPECTS: header: JWT, body: { all kindsa contact informations }
+// RETURNS: body: {data:"success message?"}
+app.post('/createContact', jsonParser, function (req, res) {
+	console.log("\t endpoint: createContact()");
+	if (!req.body){
+		console.log("\t error in request body")
+		return res.sendStatus(400);
+	}
+	else{		
+		contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response));
+	}
+});
 
 
 /* --------------- App content endpoint ----------------- */
@@ -135,20 +158,3 @@ app.get('*', (req, res) => {
 
 
 app.listen(port, () => console.log('Data Server listening on port #'+port+'...'))
-
-
-/* HTTPS options/stuff. Ignore for now...
-
-var https = require('https');
-var fs = require('fs');
-
-var options = {
-    key: fs.readFileSync('<...path to .pem file...>'),
-    cert: fs.readFileSync('<...path to .pem file...>'),
-    ca: fs.readFileSync('<...path to .pem file...>')
-};
-
-var httpsServer = https.createServer(options, app);
-httpsServer.listen(port);
-
-*/
