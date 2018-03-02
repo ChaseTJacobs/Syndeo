@@ -58,6 +58,7 @@ CREATE PROCEDURE newContact(IN   user_id INT UNSIGNED,
 BEGIN
 	INSERT INTO contacts(u_id, fullname, firstname, lastname, organization, position, email, phone, url_linkedin, mail_address, notes, other_info)
 	VALUES(user_id, full_name, first_name, last_name, org, job, c_email, c_phone, linkedin, address, u_notes, other);
+	-- Ideally you'd return a new list of contacts that includes the new one. But we'll let the client request that explicitly.
 END //
 DELIMITER ;
 

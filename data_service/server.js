@@ -135,26 +135,15 @@ app.get('/getContactList', jsonParser, function (req, res) {
 		}
 	);
 });
-	// console.log("\t endpoint: getContactList()");
-	// if (!req.body){
-		// console.log("\t error in request body")
-		// return res.sendStatus(400);
-	// }
-	// else{		
-		// contactService.getContactList(req.get('Authorization'), (response) => res.send(response));
-	// }
-// });
 
 
 app.post('/createContact', jsonParser, function (req, res) {
-	console.log("\t endpoint: createContact()");
-	if (!req.body){
-		console.log("\t error in request body")
-		return res.sendStatus(400);
-	}
-	else{		
-		contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response));
-	}
+	logger.info("hit \'createContact\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.createContact, req, res, 
+		function (req, res) {
+			contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response))
+		}
+	);
 });
 
 
