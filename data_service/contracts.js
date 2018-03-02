@@ -3,6 +3,7 @@
 	- All endpoints, unless explicitly stated, require a valid JWT in the request header to work right.
 	- All endpoints, unless explicitly stated, are POST requests.
 */
+var logger = 			require('winston');
 
 exports.enforce = function(req, contract, callback){
 	// console.log("Request Body: "+JSON.stringify(req.body));
@@ -41,6 +42,7 @@ exports.enforce = function(req, contract, callback){
 		}
 	}
 	
+	logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
 	callback(resp_obj.err, resp_obj, req);
 	
 }
@@ -183,6 +185,7 @@ exports.createIIscript =
 	}
 }
 // - getContactList (GET)
+exports.getContactList = {}
 
 // - getContactInfo
 exports.getContactInfo = 

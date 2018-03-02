@@ -28,7 +28,7 @@ DROP PROCEDURE IF EXISTS getAllContacts;
 DELIMITER //
 CREATE PROCEDURE getAllContacts(IN user_id INT UNSIGNED)
 BEGIN
-   SELECT contacts(id, firstname, lastname, organization, position) FROM contacts WHERE contacts.u_id = user_id;
+   SELECT id, firstname, lastname, organization, position FROM contacts WHERE contacts.u_id = user_id;
 END //
 DELIMITER ;
 

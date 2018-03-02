@@ -42,7 +42,7 @@ requestBodyHandler = function(contract, req, res, callback) {
 				res.send(err_obj);
 			}
 			else {
-				logger.verbose("bodyHandler, OK.")
+				logger.info("bodyHandler, OK.")
 				callback(req, res);
 			}
 		});
@@ -92,7 +92,7 @@ Endpoints
 -----------------------------------------------------*/
 
 app.post('/login', jsonParser, function(req, res) {
-	logger.verbose("hit \'login\', ipa: %s", req.ip);
+	logger.info("hit \'login\', ipa: %s", req.ip);
 	requestBodyHandler(contracts.login, req, res, 
 		function (req, res) {
 			accountService.login( req.body, function(err, response, token) {
@@ -110,7 +110,7 @@ app.post('/login', jsonParser, function(req, res) {
 
 
 app.post('/createAccount', jsonParser, function (req, res) {
-	logger.verbose("hit \'createAccount\', ipa: %s", req.ip);
+	logger.info("hit \'createAccount\', ipa: %s", req.ip);
 	requestBodyHandler(contracts.createAccount, req, res, 
 		function (req, res) {
 			accountService.createAccount( req.body, function(err, response, token) {
@@ -128,15 +128,22 @@ app.post('/createAccount', jsonParser, function (req, res) {
 
 
 app.get('/getContactList', jsonParser, function (req, res) {
-	console.log("\t endpoint: getContactList()");
-	if (!req.body){
-		console.log("\t error in request body")
-		return res.sendStatus(400);
-	}
-	else{		
-		contactService.getContactList(req.get('Authorization'), (response) => res.send(response));
-	}
+	logger.info("hit \'getContactList\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.getContactList, req, res, 
+		function (req, res) {
+			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
+		}
+	);
 });
+	// console.log("\t endpoint: getContactList()");
+	// if (!req.body){
+		// console.log("\t error in request body")
+		// return res.sendStatus(400);
+	// }
+	// else{		
+		// contactService.getContactList(req.get('Authorization'), (response) => res.send(response));
+	// }
+// });
 
 
 app.post('/createContact', jsonParser, function (req, res) {

@@ -19,12 +19,12 @@ exports.verifyToken = function(user_sent_token, callback) {
 	jwt.verify(user_sent_token, env.auth_secret, { maxAge : env.jwt_lifespan }, function(err, decoded) {
 		if (err) {
 			if (err.name == 'TokenExpiredError') {
-				logger.info("authService.verifyToken: ", err);
+				logger.info("authService.verifyToken: expired token: ", err);
 				callback({'data':"Session Expired. Please Log In Again.", 'status':250}, null);
 			}
 			else {
 				// missing or invalid or malformed signature
-				logger.warn("authService.verifyToken: ", err);
+				logger.warn("authService.verifyToken: invalid sig: ", err);
 				callback({'data':"Bad Token. Please Log In Again.", 'status':250}, null);
 			}
 		}

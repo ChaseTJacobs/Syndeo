@@ -1,6 +1,6 @@
 var db = require("./dbService");
 var authService = 	require('./authService');
-
+var logger = 			require('winston');
 
 /* GET CONTACT LIST:
 	1) 
@@ -9,12 +9,9 @@ var authService = 	require('./authService');
 	4) 
 */
 exports.getContactList = function(user_sent_token, callback){
-	console.log("\t\t IN contSrv.getContactList: ");
-	
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		if (error) {
-			console.log("\t\t a token auth error happened... ");
-			// Any JWT error will require user to log in again.
+			// Any JWT error should require user to log in again.
 			callback(error);
 		}
 		else {
@@ -26,11 +23,11 @@ exports.getContactList = function(user_sent_token, callback){
 					queryResult = qr[0];
 					
 					if(err) {
-						console.log("\t\t DB err:  "+err);
+						logger.error("contactService.getContactList: getAllContacts: ", err);
 						callback({'data':err, 'status':250});
 					}
 					else {
-						console.log("\t\t \'getContactList\' query result: "+JSON.stringify(queryResult));
+						// console.log("\t\t \'getContactList\' query result: "+JSON.stringify(queryResult));
 						callback({'data':queryResult, 'status':150});
 					}
 			});
