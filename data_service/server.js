@@ -1,13 +1,25 @@
 var express = 			require('express');
+var app = express();
+
 var bodyParser = 		require('body-parser');
-var authService = 	require('./authService');
+var jsonParser = bodyParser.json({"type":"application/json"});
+
 var path = 				require('path'); // for serving static content
+var logger = 			require('winston');
+// logger.add(logger.transports.File, { filename: 'combined.log' });
+logger.add(logger.transports.File, {
+	filename: 'combined.log',
+	handleExceptions: true,
+	humanReadableUnhandledException: true
+});
+logger.exitOnError = false;
+
+var authService = 	require('./authService');
 var accountService = require('./accountService');
 var contactService = require('./contactService');
+var contracts = 		require('./contracts');
 var env = 				require('./environment');
 
-var app = express();
-var jsonParser = bodyParser.json({"type":"application/json"});
 var port = 3001;
 
 
@@ -19,6 +31,23 @@ app.use(function(req, res, next){
     next();
 });
 
+requestBodyHandler = function(contract, req, res, callback) {
+	if (!req.body) {
+			return res.sendStatus(400);
+	}
+	else {
+		contracts.enforce(req, contract, function(err, err_obj, req) {
+			if (err) {
+				logger.warn("bodyHandler, error: ", err_obj.data);
+				res.send(err_obj);
+			}
+			else {
+				logger.verbose("bodyHandler, OK.")
+				callback(req, res);
+			}
+		});
+	}
+}
 
 /*-----------------------------------------------------
 Endpoints
@@ -62,18 +91,10 @@ Endpoints
 
 -----------------------------------------------------*/
 
-// LOG IN
-// EXPECTS: body: {email:"", pass:""}
-// RETURNS: header: new JWT, body: {data: {user info} }
-app.post('/login', jsonParser, function (req, res) {
-	  console.log("\t endpoint: login()");
-	  if (!req.body) {
-		  console.log("\t error in request body")
-		  // TODO: when/why !req.body == false? Do we need to send responses
-		  //return res.sendStatus(400);
-		  res.send({'error':"problem in Request Body"});
-	  }
-	  else {
+app.post('/login', jsonParser, function(req, res) {
+	logger.verbose("hit \'login\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.login, req, res, 
+		function (req, res) {
 			accountService.login( req.body, function(err, response, token) {
 				if (err) {
 					res.send( response );
@@ -84,14 +105,10 @@ app.post('/login', jsonParser, function (req, res) {
 					res.send( response );
 				}
 			});
-	  }
-  }
-);
+		});
+});
 
 
-// CREATE ACCOUNT
-// EXPECTS: body: {email:"", pass:"", userInfo:"{}"}
-// RETURNS: header: new JWT, body: {data: {user info} }
 app.post('/createAccount', jsonParser, function (req, res) {
   
   console.log("\t endpoint: createAccount()");
@@ -115,9 +132,6 @@ app.post('/createAccount', jsonParser, function (req, res) {
 });
 
 
-// GET CONTACT LIST
-// EXPECTS: header: JWT
-// RETURNS: body: {data: [{contact},{contact}...] }
 app.get('/getContactList', jsonParser, function (req, res) {
 	console.log("\t endpoint: getContactList()");
 	if (!req.body){
@@ -130,9 +144,6 @@ app.get('/getContactList', jsonParser, function (req, res) {
 });
 
 
-// CREATE CONTACT
-// EXPECTS: header: JWT, body: { all kindsa contact informations }
-// RETURNS: body: {data:"success message?"}
 app.post('/createContact', jsonParser, function (req, res) {
 	console.log("\t endpoint: createContact()");
 	if (!req.body){
@@ -157,4 +168,4 @@ app.get('*', (req, res) => {
 
 
 
-app.listen(port, () => console.log('Data Server listening on port #'+port+'...'))
+app.listen(port, () => logger.info('Data Server listening on port #%d...', port))

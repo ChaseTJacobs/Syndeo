@@ -1,6 +1,6 @@
 var db = require("./dbService");
 var authService = 	require('./authService');
-// var cryptoUtil = require("./cryptoUtil");
+var logger = 			require('winston');
 
 /* Log In:
 	1) validate user info
@@ -9,7 +9,7 @@ var authService = 	require('./authService');
 	3) generate JWT
 */
 exports.login = function(reqBody, callback){
-	console.log("\t\t IN acctSvc.login: ");
+	
 	/* 1 
 		TODO: any validation of reqBody contents???
 			if so, make encryption a callback from that.
@@ -25,41 +25,40 @@ exports.login = function(reqBody, callback){
 				function(err, qr){
 					var queryResult = {};
 					queryResult = qr[0][0];
+					// console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(qr));
 					
 					if(err) {
 						// TODO: what would this even be??
-						console.log("\t\t DB err:  "+err);
+						logger.error("accountService.login: ", err);
 						callback(true, {'data':"some kind of DB error occurred", 'status':251}, null);
 					}
 					else {
-						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));
 						
-						if (qr[0].length == 0 /* empty set */) {
+						if (qr[0].length == 0) {
 							// queryResult is the empty set. Email not in DB. do not generate JWT
-							console.log("\t\t requested email \'"+reqBody.email+"\' does not exist.");
+							logger.warn("accountService.login: user email \'%s\' does not exist", reqBody.email);
 							callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
 						}
 						else {
-							if ( !(queryResult["password"] === reqBody.pass /* TODO: compare passwords */)) {
-								console.log("\t\t submitted password \'"+reqBody.pass+"\' != "+queryResult["password"]);
+							if ( !(queryResult["password"] === reqBody.pass )) {
+								logger.warn("accountService.login: passwords \'%s\' != \'%s\'", reqBody.pass, queryResult["password"] );
 								callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
 							}
 							else if (false /* do something with queryResult["expiry_date"] */) {
-								// TODO: check account expiry date
+								// TODO: check account expiry date?
 								// callback(true, {'data':"Account has expired due to non-payment", 'status':250}, null);
 							}
 							else { 
-								user_email = queryResult["email"];//reqBody.email;
-								user_id = queryResult["id"];//77;
+								user_email = queryResult["email"];
+								user_id = queryResult["id"];
 								
 								// 3 - generate JWT
 								authService.generateToken(user_email, user_id, function(err, token) {
 									if (err) {
-										console.log("\t\t something went wrong with JWT generation...");
 										callback(true, {'data':"something went wrong with JWT generation", 'status':252}, null);
 									}
 									else {
-										console.log("\t\t Successful Login. Sending user_info: "+queryResult["user_info"]);
+										logger.verbose("accountService.login: successful login by %s", reqBody.email);
 										callback(false, {'data':queryResult["user_info"], 'status':150}, token);
 									}
 								});								

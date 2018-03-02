@@ -18,7 +18,7 @@ DROP PROCEDURE IF EXISTS isUserInDatabase;
 DELIMITER //
 CREATE PROCEDURE isUserInDatabase(IN u_email VARCHAR(64))
 BEGIN
-   SELECT id FROM users WHERE email = u_email;
+   SELECT * FROM users WHERE email = u_email;
 END //
 DELIMITER ;
 
