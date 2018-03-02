@@ -29,7 +29,7 @@ exports.login = function(reqBody, callback){
 					
 					if(err) {
 						// TODO: what would this even be??
-						logger.error("accountService.login: ", err);
+						logger.error("accountService.login: isUserInDatabase: ", err);
 						callback(true, {'data':"some kind of DB error occurred", 'status':251}, null);
 					}
 					else {
@@ -58,7 +58,7 @@ exports.login = function(reqBody, callback){
 										callback(true, {'data':"something went wrong with JWT generation", 'status':252}, null);
 									}
 									else {
-										logger.verbose("accountService.login: successful login by %s", reqBody.email);
+										logger.info("accountService.login: successful login by %s", reqBody.email);
 										callback(false, {'data':queryResult["user_info"], 'status':150}, token);
 									}
 								});								
@@ -96,15 +96,15 @@ exports.createAccount = function(reqBody, callback){
 					queryResult = qr[0][0];
 					
 					if(err) {
-						console.log("\t\t DB err:  "+err);
+						logger.error("accountService.createAccount: isUserInDatabase: ", err);
 						callback(true, " something went wrong... ", null);
 					}
 					else {
-						console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
+						// console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
 						
 						if (qr[0].length > 0) {
 							// Email already in use in DB
-							console.log("\t\t requested email \'"+reqBody.email+"\' already in DB.");
+							logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email);
 							callback(true, {'data':"an account already exists in connection with this email", 'status':250}, null);
 						}
 						else {
@@ -117,10 +117,10 @@ exports.createAccount = function(reqBody, callback){
 										[reqBody.email, reqBody.pass, userInfo], // stripe_token???
 										function (error, queryRes) {
 											queryResult = queryRes[0][0];
-											console.log("\t\t \'addUser\' query result: "+JSON.stringify(queryResult));
+											// console.log("\t\t \'addUser\' query result: "+JSON.stringify(queryResult));
 											
 											if(error) {
-												console.log("\t\t DB err:  "+error);
+												logger.error("accountService.createAccount: addUser: ", error);
 												callback(true, " something went wrong... ", null);
 											}
 											else { 
@@ -130,11 +130,10 @@ exports.createAccount = function(reqBody, callback){
 												// 3 - generate JWT
 												authService.generateToken(user_email, user_id, function(err, token) {
 													if (err) {
-														console.log("\t\t something went wrong with JWT generation...");
 														callback(true, "something went wrong with JWT generation...", null);
 													}
 													else {
-														console.log("\t\t Successful Registration. Sending user_info: "+queryResult["user_info"]);
+														logger.info("accountService.createAccount: created account for %s", reqBody.email);
 														callback(false, queryResult["user_info"], token);
 													}
 												});								

@@ -110,14 +110,9 @@ app.post('/login', jsonParser, function(req, res) {
 
 
 app.post('/createAccount', jsonParser, function (req, res) {
-  
-  console.log("\t endpoint: createAccount()");
-  
-  if (!req.body){
-	  console.log("\t error in request body")
-	  return res.sendStatus(400);
-  }
-  else {
+	logger.verbose("hit \'createAccount\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.createAccount, req, res, 
+		function (req, res) {
 			accountService.createAccount( req.body, function(err, response, token) {
 				if (err) {
 					res.send( response );
@@ -128,7 +123,7 @@ app.post('/createAccount', jsonParser, function (req, res) {
 					res.send( response );
 				}
 			});
-	  }
+		});
 });
 
 
