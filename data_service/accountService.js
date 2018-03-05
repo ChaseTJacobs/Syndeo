@@ -77,7 +77,6 @@ exports.login = function(reqBody, callback){
 	4) generate JWT
 */
 exports.createAccount = function(reqBody, callback){
-	console.log("\t\t IN acctSvc.createAccount: ");
 	/* 1 
 		TODO: any validation of reqBody contents???
 			if so, make encryption a callback from that.

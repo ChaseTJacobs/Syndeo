@@ -127,21 +127,21 @@ app.post('/createAccount', jsonParser, function (req, res) {
 });
 
 
-app.get('/getContactList', jsonParser, function (req, res) {
-	logger.info("hit \'getContactList\', ipa: %s", req.ip);
-	requestBodyHandler(contracts.getContactList, req, res, 
-		function (req, res) {
-			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
-		}
-	);
-});
-
-
 app.post('/createContact', jsonParser, function (req, res) {
 	logger.info("hit \'createContact\', ipa: %s", req.ip);
 	requestBodyHandler(contracts.createContact, req, res, 
 		function (req, res) {
 			contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response))
+		}
+	);
+});
+
+
+app.get('/getContactList', jsonParser, function (req, res) {
+	logger.info("hit \'getContactList\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.getContactList, req, res, 
+		function (req, res) {
+			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
 		}
 	);
 });
