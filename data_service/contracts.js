@@ -14,12 +14,17 @@ exports.enforce = function(req, contract, callback){
 		'data' : []
 	};
 	
+	var example = {};
+	
 	for (key in contract) {
+		example[key] = contract[key].type;
+		
+		// catch missing required fields
 		if (req.body[key] === undefined) {
 			if (contract[key].required) {
 				// missing required field!
 				resp_obj.err = true;
-				resp_obj.data.push({'msg':"missing required field", 'ex':{key:contract[key].type}});
+				resp_obj.data.push({'msg':"missing required field", example});
 			}
 			else {
 				// create non-required field and assign it placeholder value of NULL
@@ -30,16 +35,18 @@ exports.enforce = function(req, contract, callback){
 			if (contract[key].required && req.body[key] === null) {
 				// required field is NULL!
 				resp_obj.err = true;
-				resp_obj.data.push({'msg':"missing required field", 'ex':{key:contract[key].type}});
+				resp_obj.data.push({'msg':"required field is NULL", example});
 			}
 			
 			if (typeof req.body[key] != typeof contract[key].type) {
 				// wrong type!
 				resp_obj.err = true;
-				resp_obj.data.push({'msg':"wrong field type", 'ex':{key:contract[key].type}});
+				resp_obj.data.push({'msg':"wrong field type", example});
 			}
 			// else, we're okay.
 		}
+		
+		example = {};
 	}
 	
 	logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
