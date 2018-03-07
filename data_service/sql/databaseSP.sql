@@ -32,14 +32,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- select '...procedure create - newContact' AS '';
--- DROP PROCEDURE IF EXISTS newContact;
--- DELIMITER //
--- CREATE PROCEDURE newContact(IN full_name VARCHAR(256), user_id INT UNSIGNED)
--- BEGIN
-	-- INSERT INTO contacts(u_id, fullname) VALUES(user_id, full_name);
--- END //
--- DELIMITER ;
+
 select '...procedure create - newContact' AS '';
 DROP PROCEDURE IF EXISTS newContact;
 DELIMITER //

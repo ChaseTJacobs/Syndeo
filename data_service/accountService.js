@@ -1,5 +1,6 @@
 var db = require("./dbService");
 var authService = 	require('./authService');
+var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
 /* Log In:
@@ -30,19 +31,19 @@ exports.login = function(reqBody, callback){
 					if(err) {
 						// TODO: what would this even be??
 						logger.error("accountService.login: isUserInDatabase: ", err);
-						callback(true, {'data':"some kind of DB error occurred", 'status':251}, null);
+						callback(true, contracts.DB_Access_Error, null);
 					}
 					else {
 						
 						if (qr[0].length == 0) {
 							// queryResult is the empty set. Email not in DB. do not generate JWT
 							logger.warn("accountService.login: user email \'%s\' does not exist", reqBody.email);
-							callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
+							callback(true, contracts.Bad_Creds, null);
 						}
 						else {
 							if ( !(queryResult["password"] === reqBody.pass )) {
 								logger.warn("accountService.login: passwords \'%s\' != \'%s\'", reqBody.pass, queryResult["password"] );
-								callback(true, {'data':"Incorrect Username or Password.", 'status':250}, null);
+								callback(true, contracts.Bad_Creds, null);
 							}
 							else if (false /* do something with queryResult["expiry_date"] */) {
 								// TODO: check account expiry date?
@@ -55,11 +56,11 @@ exports.login = function(reqBody, callback){
 								// 3 - generate JWT
 								authService.generateToken(user_email, user_id, function(err, token) {
 									if (err) {
-										callback(true, {'data':"something went wrong with JWT generation", 'status':252}, null);
+										callback(true, err, null);
 									}
 									else {
 										logger.info("accountService.login: successful login by %s", reqBody.email);
-										callback(false, {'data':queryResult["user_info"], 'status':150}, token);
+										callback(false, {'data':queryResult["user_info"], 'status':contracts.Login_Success}, token);
 									}
 								});								
 							}
@@ -96,7 +97,7 @@ exports.createAccount = function(reqBody, callback){
 					
 					if(err) {
 						logger.error("accountService.createAccount: isUserInDatabase: ", err);
-						callback(true, " something went wrong... ", null);
+						callback(true, contracts.DB_Access_Error, null);
 					}
 					else {
 						// console.log("\t\t \'isUserInDatabase\' query result: "+JSON.stringify(queryResult));//queryResult);//
@@ -104,7 +105,7 @@ exports.createAccount = function(reqBody, callback){
 						if (qr[0].length > 0) {
 							// Email already in use in DB
 							logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email);
-							callback(true, {'data':"an account already exists in connection with this email", 'status':250}, null);
+							callback(true, contracts.Username_Taken, null);
 						}
 						else {
 							
@@ -120,7 +121,7 @@ exports.createAccount = function(reqBody, callback){
 											
 											if(error) {
 												logger.error("accountService.createAccount: addUser: ", error);
-												callback(true, " something went wrong... ", null);
+												callback(true, contracts.DB_Access_Error, null);
 											}
 											else { 
 												user_email = queryResult["email"];
@@ -129,11 +130,11 @@ exports.createAccount = function(reqBody, callback){
 												// 3 - generate JWT
 												authService.generateToken(user_email, user_id, function(err, token) {
 													if (err) {
-														callback(true, "something went wrong with JWT generation...", null);
+														callback(true, err, null);
 													}
 													else {
 														logger.info("accountService.createAccount: created account for %s", reqBody.email);
-														callback(false, queryResult["user_info"], token);
+													callback(false, {'data':queryResult["user_info"], 'status':contracts.NewAcct_Success}, token);
 													}
 												});								
 											}

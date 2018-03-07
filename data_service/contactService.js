@@ -1,5 +1,6 @@
 var db = require("./dbService");
 var authService = 	require('./authService');
+var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
 /* GET CONTACT LIST:
@@ -24,11 +25,11 @@ exports.getContactList = function(user_sent_token, callback){
 					
 					if(err) {
 						logger.error("contactService.getContactList: getAllContacts: ", err);
-						callback({'data':err, 'status':250});
+						callback(contracts.DB_Access_Error);
 					}
 					else {
 						// console.log("\t\t \'getContactList\' query result: "+JSON.stringify(queryResult));
-						callback({'data':queryResult, 'status':150});
+						callback({'data':queryResult, 'status':contracts.GetList_Success});
 					}
 			});
 		}
@@ -59,11 +60,11 @@ exports.createContact = function(user_sent_token, req_body, callback){
 					// queryResult = qr[0];
 					if(err) {
 						logger.error("contactService.createContact: newContact: ", err);
-						callback({'data':err, 'status':250});
+						callback(contracts.DB_Access_Error);
 					}
 					else {
 						logger.info("contactService.createContact: created contact: %s", fullname);
-						callback( {'data':"success", 'status':150} );
+						callback( {'data':"success", 'status':contracts.NewContact_Success} );
 					}
 			});
 		}

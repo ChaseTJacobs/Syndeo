@@ -1,5 +1,5 @@
 /*
-	Syndeo API Contracts
+	Syndeo API Request Body Contracts
 	- All endpoints, unless explicitly stated, require a valid JWT in the request header to work right.
 	- All endpoints, unless explicitly stated, are POST requests.
 */
@@ -396,3 +396,26 @@ enforceContract(test_body, createAccount, function(err, err_obj) {
 	else
 		console.log("It's all good!");
 });*/
+
+
+
+/*
+	Syndeo API Response Body Contracts
+	- 
+*/
+// General
+exports.DB_Access_Error = { 'data':"DB error. This is a problem.", 'status':299 };
+exports.Stripe_Error = { 'data':"Stripe Token Error", 'status':298 };
+// Auth Service
+exports.JWT_Generation_Error = { 'data':"Could not generate JWT.", 'status':297 };
+exports.JWT_Expiration_Error = { 'data':"Your JWT is Expired.", 'status':296 };
+exports.JWT_Malformed_Error = { 'data':"Your JWT is Malformed.", 'status':295 };
+// Account Service
+exports.Login_Success = 110; // data = user_info
+exports.Bad_Creds = { 'data':"Incorrect Username or Password.", 'status':210 };
+exports.NewAcct_Success = 111; // data = user_info
+exports.Username_Taken = { 'data':"an account already exists in connection with this email", 'status':211 };
+// Contact Service
+exports.GetList_Success = 112;
+exports.NewContact_Success = 113;
+
