@@ -37,7 +37,7 @@ exports.enforce = function(req, contract, callback){
 				resp_obj.err = true;
 				resp_obj.data.push({'msg':"required field is NULL", example});
 			}
-			else if (typeof req.body[key] != typeof contract[key].type) {
+			else if (typeof req.body[key] != typeof contract[key].type && req.body[key] != null) {
 				// wrong type!
 				resp_obj.err = true;
 				resp_obj.data.push({'msg':"wrong field type", example});
