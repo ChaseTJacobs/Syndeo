@@ -8,9 +8,9 @@ var contactService = require('./contactService');
 var contracts = 		require('./contracts');
 var env = 				require('./environment');
 
-var jsonParser = bodyParser.json({"type":"application/json"});
 var app = express();
-var port = 3001;
+var jsonParser = bodyParser.json({"type":"application/json"});
+var port = env.port;
 
 logger.add(logger.transports.File, {
 	filename: 'combined.log',

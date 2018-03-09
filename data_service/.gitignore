@@ -3,6 +3,7 @@
 # my ignored files
 environment.js
 sql/databaseCreate.sql
+dist/
 
 # Logs
 logs
