@@ -24,7 +24,7 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 						if (qr[0].length == 0) {
 							// either that contactID doesn't exist, or it doesn't belong to you.
 							logger.warn("contactService.getContactInfo: user, id=%d cannot access client, id=%d", decoded_token.id, req_body.contactID);
-							callback(true, contracts.Bad_ContactID, null);
+							callback(contracts.Bad_ContactID);
 						}
 						logger.info("contactService.getContactInfo: success.");//: %s", fullname);
 						callback( {'data': {'userInfo':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
