@@ -1,12 +1,17 @@
 var express = 			require('express');
-var app = express();
-
 var bodyParser = 		require('body-parser');
-var jsonParser = bodyParser.json({"type":"application/json"});
-
 var path = 				require('path'); // for serving static content
 var logger = 			require('winston');
-// logger.add(logger.transports.File, { filename: 'combined.log' });
+var authService = 	require('./authService');
+var accountService = require('./accountService');
+var contactService = require('./contactService');
+var contracts = 		require('./contracts');
+var env = 				require('./environment');
+
+var jsonParser = bodyParser.json({"type":"application/json"});
+var app = express();
+var port = 3001;
+
 logger.add(logger.transports.File, {
 	filename: 'combined.log',
 	handleExceptions: true,
@@ -14,20 +19,10 @@ logger.add(logger.transports.File, {
 });
 logger.exitOnError = false;
 
-var authService = 	require('./authService');
-var accountService = require('./accountService');
-var contactService = require('./contactService');
-var contracts = 		require('./contracts');
-var env = 				require('./environment');
-
-var port = 3001;
-
-
-
-// CORS (needed for local testing... that's all. Right?)
+// allow certain headers
 app.use(function(req, res, next){
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
 
@@ -127,13 +122,21 @@ app.post('/createAccount', jsonParser, function (req, res) {
 });
 
 
+app.post('/forgotPassword', jsonParser, function (req, res) {
+	logger.info("hit \'forgotPassword\', ipa: %s", req.ip);
+	requestBodyHandler(contracts.forgotPassword, req, res, 
+		function (req, res) {
+			accountService.forgotPassword( req.body, (response) => res.send(response))
+		});
+});
+
+
 app.post('/createContact', jsonParser, function (req, res) {
 	logger.info("hit \'createContact\', ipa: %s", req.ip);
 	requestBodyHandler(contracts.createContact, req, res, 
 		function (req, res) {
 			contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response))
-		}
-	);
+		});
 });
 
 
@@ -142,8 +145,7 @@ app.get('/getContactList', jsonParser, function (req, res) {
 	requestBodyHandler(contracts.getContactList, req, res, 
 		function (req, res) {
 			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
-		}
-	);
+		});
 });
 
 

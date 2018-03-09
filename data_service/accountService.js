@@ -3,6 +3,12 @@ var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
+// exports.forgotPassword = function(reqBody, callback){
+	
+// }
+
+
+
 /* Log In:
 	1) validate user info
 	1.5) Encrypt data
