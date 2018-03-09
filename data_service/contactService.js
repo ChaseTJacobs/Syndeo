@@ -27,7 +27,7 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 							callback(true, contracts.Bad_ContactID, null);
 						}
 						logger.info("contactService.getContactInfo: success.");//: %s", fullname);
-						callback( {'data': qr[0], 'status':contracts.GetContInfo_Success} );
+						callback( {'data': {'userInfo':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
 					}
 			});
 		}
