@@ -56,4 +56,13 @@ END //
 DELIMITER ;
 
 
+select '...procedure create - getContactInfo' AS '';
+DROP PROCEDURE IF EXISTS getContactInfo;
+DELIMITER //
+CREATE PROCEDURE getContactInfo(IN user_id INT UNSIGNED, cont_id INT UNSIGNED)
+BEGIN
+   SELECT * FROM contacts WHERE contacts.u_id = user_id and contacts.id = cont_id;
+END //
+DELIMITER ;
+
 

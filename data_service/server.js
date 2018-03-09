@@ -33,11 +33,11 @@ requestBodyHandler = function(contract, req, res, callback) {
 	else {
 		contracts.enforce(req, contract, function(err, err_obj, req) {
 			if (err) {
-				logger.warn("bodyHandler, error: ", err_obj.data);
+				// logger.warn("bodyHandler, error: ", err_obj.data);
 				res.send(err_obj);
 			}
 			else {
-				logger.info("bodyHandler, OK.")
+				// logger.info("bodyHandler, OK.")
 				callback(req, res);
 			}
 		});
@@ -87,7 +87,7 @@ Endpoints
 -----------------------------------------------------*/
 
 app.post('/login', jsonParser, function(req, res) {
-	logger.info("hit \'login\', ipa: %s", req.ip);
+	logger.info("hit \'login\'");
 	requestBodyHandler(contracts.login, req, res, 
 		function (req, res) {
 			accountService.login( req.body, function(err, response, token) {
@@ -105,7 +105,7 @@ app.post('/login', jsonParser, function(req, res) {
 
 
 app.post('/createAccount', jsonParser, function (req, res) {
-	logger.info("hit \'createAccount\', ipa: %s", req.ip);
+	logger.info("hit \'createAccount\'");
 	requestBodyHandler(contracts.createAccount, req, res, 
 		function (req, res) {
 			accountService.createAccount( req.body, function(err, response, token) {
@@ -123,7 +123,7 @@ app.post('/createAccount', jsonParser, function (req, res) {
 
 
 app.post('/forgotPassword', jsonParser, function (req, res) {
-	logger.info("hit \'forgotPassword\', ipa: %s", req.ip);
+	logger.info("hit \'forgotPassword\'");
 	requestBodyHandler(contracts.forgotPassword, req, res, 
 		function (req, res) {
 			accountService.forgotPassword( req.body, (response) => res.send(response))
@@ -132,7 +132,7 @@ app.post('/forgotPassword', jsonParser, function (req, res) {
 
 
 app.post('/createContact', jsonParser, function (req, res) {
-	logger.info("hit \'createContact\', ipa: %s", req.ip);
+	logger.info("hit \'createContact\'");
 	requestBodyHandler(contracts.createContact, req, res, 
 		function (req, res) {
 			contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response))
@@ -141,10 +141,19 @@ app.post('/createContact', jsonParser, function (req, res) {
 
 
 app.get('/getContactList', jsonParser, function (req, res) {
-	logger.info("hit \'getContactList\', ipa: %s", req.ip);
+	logger.info("hit \'getContactList\'");
 	requestBodyHandler(contracts.getContactList, req, res, 
 		function (req, res) {
 			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
+		});
+});
+
+
+app.post('/getContactInfo', jsonParser, function (req, res) {
+	logger.info("hit \'getContactInfo\'");
+	requestBodyHandler(contracts.getContactInfo, req, res, 
+		function (req, res) {
+			contactService.getContactInfo(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
 
@@ -155,7 +164,7 @@ app.use(express.static(path.join(__dirname, env.path_to_dist)));
 
 // endpoint for static stuff.
 app.get('*', (req, res) => {
-	console.log("  hit app stuff with URL: " + req.originalUrl);
+	logger.info("hit \'$s\'", req.originalUrl);
 	res.sendFile(path.join(__dirname, env.path_to_dist+'/index.html'));
 });
 
