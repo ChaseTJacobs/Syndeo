@@ -4,6 +4,7 @@
 environment.js
 sql/databaseCreate.sql
 dist/
+package-lock.json
 
 # Logs
 logs
