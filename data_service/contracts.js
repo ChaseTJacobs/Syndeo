@@ -145,7 +145,11 @@ exports.createContact =
 	},
 	'custom':{
 		'required':false,
-		'type':{'object':"object"}		
+		'type':{'object':"object"},
+	},
+	'created_milli':{
+		'required':false,
+		'type':5//millisecs
 	}
 };
 // - createActivity

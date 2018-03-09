@@ -28,7 +28,7 @@ DROP PROCEDURE IF EXISTS getAllContacts;
 DELIMITER //
 CREATE PROCEDURE getAllContacts(IN user_id INT UNSIGNED)
 BEGIN
-   SELECT id, firstname, lastname, organization, position FROM contacts WHERE contacts.u_id = user_id;
+   SELECT id, firstname, lastname, organization, created FROM contacts WHERE contacts.u_id = user_id;
 END //
 DELIMITER ;
 
@@ -47,10 +47,11 @@ CREATE PROCEDURE newContact(IN   user_id INT UNSIGNED,
 											linkedin VARCHAR(256),
 											address VARCHAR(128),
 											u_notes VARCHAR(16384),
-											other VARCHAR(16384))
+											other VARCHAR(16384),
+											created BIGINT UNSIGNED)
 BEGIN
-	INSERT INTO contacts(u_id, fullname, firstname, lastname, organization, position, email, phone, url_linkedin, mail_address, notes, other_info)
-	VALUES(user_id, full_name, first_name, last_name, org, job, c_email, c_phone, linkedin, address, u_notes, other);
+	INSERT INTO contacts(u_id, fullname, firstname, lastname, organization, position, email, phone, url_linkedin, mail_address, notes, other_info, created_milli)
+	VALUES(user_id, full_name, first_name, last_name, org, job, c_email, c_phone, linkedin, address, u_notes, other, created);
 	-- Ideally you'd return a new list of contacts that includes the new one. But we'll let the client request that explicitly.
 END //
 DELIMITER ;

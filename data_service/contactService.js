@@ -79,8 +79,8 @@ exports.createContact = function(user_sent_token, req_body, callback){
 		}
 		else {
 			// Query DB for contacts
-			db.query("CALL newContact(?,?,?,?,?,?,?,?,?,?,?,?)", 
-				[decoded_token.id, fullname, req_body.fName, req_body.lName, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.linkedIn, req_body.address, req_body.description, custom], 
+			db.query("CALL newContact(?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+				[decoded_token.id, fullname, req_body.fName, req_body.lName, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.linkedIn, req_body.address, req_body.description, custom, req_body.created_milli], 
 				function(err, qr){
 					// var queryResult = {};
 					// queryResult = qr[0];
