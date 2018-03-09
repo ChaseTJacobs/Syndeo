@@ -26,8 +26,10 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 							logger.warn("contactService.getContactInfo: user, id=%d cannot access client, id=%d", decoded_token.id, req_body.contactID);
 							callback(contracts.Bad_ContactID);
 						}
-						logger.info("contactService.getContactInfo: success.");//: %s", fullname);
-						callback( {'data': {'userInfo':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
+						else {
+							logger.info("contactService.getContactInfo: success.");//: %s", fullname);
+							callback( {'data': {'userInfo':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
+						}
 					}
 			});
 		}
