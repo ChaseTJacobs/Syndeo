@@ -229,44 +229,64 @@ exports.updateContactInfo =
 		'type':5
 	},
 	'fName':{
-		'required':false,
+		'required':true,
 		'type':"string"
 	},
 	'lName':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'company':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'position':{
-		'required':false,
+		'required':true,
 		'type':"string"	
 	},
 	'email':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'phone':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'linkedIn':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'address':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'description':{
-		'required':false,
+		'required':true,
 		'type':"string"		
 	},
 	'custom':{
-		'required':false,
+		'required':true,
 		'type':{'object':"object"}		
+	}
+};
+// - updateContactStats
+exports.updateContactStats =
+{
+	'contactID':{
+		'required':true,
+		'type':5
+	},
+	'email_response':{
+		'required':true,
+		'type':5
+	},
+	'resume_request':{
+		'required':true,
+		'type':5		
+	},
+	'msg_or_call_from':{
+		'required':true,
+		'type':5		
 	}
 };
 // - updateActivity
@@ -407,8 +427,8 @@ exports.NewContact_Success = 113;
 
 exports.GetContInfo_Success = 114;
 exports.Bad_ContactID = { 'data':"requested contact info with bad contactID", 'status':214 }; // getContactInfo
-
-
+exports.UpdateContInfo_Success = { 'data':"success", 'status':115 }; // updateContactInfo
+exports.UpdateContStats_Success = { 'data':"success", 'status':116 }; // updateContactStats
 
 
 

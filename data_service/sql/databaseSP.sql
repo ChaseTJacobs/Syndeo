@@ -33,6 +33,16 @@ END //
 DELIMITER ;
 
 
+select '...procedure create - getContactInfo' AS '';
+DROP PROCEDURE IF EXISTS getContactInfo;
+DELIMITER //
+CREATE PROCEDURE getContactInfo(IN user_id INT UNSIGNED, cont_id INT UNSIGNED)
+BEGIN
+   SELECT * FROM contacts WHERE contacts.u_id = user_id and contacts.id = cont_id;
+END //
+DELIMITER ;
+
+
 select '...procedure create - newContact' AS '';
 DROP PROCEDURE IF EXISTS newContact;
 DELIMITER //
@@ -57,13 +67,39 @@ END //
 DELIMITER ;
 
 
-select '...procedure create - getContactInfo' AS '';
-DROP PROCEDURE IF EXISTS getContactInfo;
+select '...procedure create - updateContact' AS '';
+DROP PROCEDURE IF EXISTS updateContact;
 DELIMITER //
-CREATE PROCEDURE getContactInfo(IN user_id INT UNSIGNED, cont_id INT UNSIGNED)
+CREATE PROCEDURE updateContact(IN   user_id INT UNSIGNED,
+												c_id INT UNSIGNED,
+												first_name VARCHAR(128),
+												last_name VARCHAR(128),
+												org VARCHAR(128),
+												job VARCHAR(256),
+												c_email VARCHAR(128),
+												c_phone VARCHAR(64),
+												linkedin VARCHAR(256),
+												address VARCHAR(128),
+												u_notes VARCHAR(16384),
+												other VARCHAR(16384))
 BEGIN
-   SELECT * FROM contacts WHERE contacts.u_id = user_id and contacts.id = cont_id;
+	UPDATE contacts 
+	SET	firstname = first_name, lastname = last_name, 
+			organization = org, position = job, 
+			email = c_email, phone = c_phone, 
+			url_linkedin = linkedin, mail_address = address, 
+			notes = u_notes, other_info = other
+	WHERE user_id = contacts.u_id and c_id = contacts.id;
 END //
 DELIMITER ;
 
 
+select '...procedure create - updateContactStats' AS '';
+DROP PROCEDURE IF EXISTS updateContactStats;
+DELIMITER //
+CREATE PROCEDURE updateContactStats(IN user_id INT UNSIGNED, c_id INT UNSIGNED, email_resp INT UNSIGNED, resume_req INT UNSIGNED, msgCall INT UNSIGNED)
+BEGIN
+	UPDATE contacts SET email_response = email_resp, resume_request = resume_req, msg_or_call_from = msgCall
+	WHERE user_id = contacts.u_id and c_id = contacts.id;
+END //
+DELIMITER ;

@@ -3,6 +3,74 @@ var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
+
+/*
+	UPDATE CONTACT STATS:
+*/
+exports.updateContactStats = function(user_sent_token, req_body, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL updateContact(?,?,?,?,?)", 
+				[decoded_token.id, req_body.contactID, req_body.email_response, req_body.resume_request, req_body.msg_or_call_from],
+				function(err, qr){
+					if(err) {
+						logger.error("contactService.updateContactStats: updateContactStats: ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr.affectedRows < 1) {
+							// either that contactID doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.updateContactStats: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.contactID);
+							callback(contracts.Bad_ContactID);
+						}
+						else {
+							logger.info("contactService.updateContactStats: success.");
+							callback( contracts.UpdateContStats_Success );
+						}
+					}
+			});
+		}
+	});
+}
+
+
+/*
+	UPDATE CONTACT INFO:
+*/
+exports.updateContactInfo = function(user_sent_token, req_body, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		var custom = JSON.stringify(req_body.custom);
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL updateContact(?,?,?,?,?,?,?,?,?,?,?,?)", 
+				[decoded_token.id, req_body.contactID, req_body.fName, req_body.lName, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.linkedIn, req_body.address, req_body.description, custom],
+				function(err, qr){
+					if(err) {
+						logger.error("contactService.updateContactInfo: updateContact: ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						//logger.info("contactService.updateContactInfo: QR = ", qr);
+						if (qr.affectedRows < 1) {
+							// either that contactID doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.updateContactInfo: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.contactID);
+							callback(contracts.Bad_ContactID);
+						}
+						else {
+							logger.info("contactService.updateContactInfo: success.");
+							callback( contracts.UpdateContInfo_Success );
+						}
+					}
+			});
+		}
+	});
+}
+
 /*
 	GET CONTACT INFO:
 */

@@ -158,6 +158,24 @@ app.post('/getContactInfo', jsonParser, function (req, res) {
 });
 
 
+app.post('/updateContactInfo', jsonParser, function (req, res) {
+	logger.info("hit \'updateContactInfo\'");
+	requestBodyHandler(contracts.updateContactInfo, req, res, 
+		function (req, res) {
+			contactService.updateContactInfo(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+
+app.post('/updateContactStats', jsonParser, function (req, res) {
+	logger.info("hit \'updateContactStats\'");
+	requestBodyHandler(contracts.updateContactStats, req, res, 
+		function (req, res) {
+			contactService.updateContactStats(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+
 /* --------------- App content endpoint ----------------- */
 // specify path for our static content
 app.use(express.static(path.join(__dirname, env.path_to_dist)));
