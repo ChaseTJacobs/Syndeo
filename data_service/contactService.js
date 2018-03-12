@@ -13,8 +13,8 @@ exports.updateContactStats = function(user_sent_token, req_body, callback){
 			callback(error);
 		}
 		else {
-			db.query("CALL updateContact(?,?,?,?,?)", 
-				[decoded_token.id, req_body.contactID, req_body.email_response, req_body.resume_request, req_body.msg_or_call_from],
+			db.query("CALL updateContactStats(?,?,?,?,?)", 
+				[decoded_token.id, req_body.c_id, req_body.email_response, req_body.resume_request, req_body.msg_or_call_from],
 				function(err, qr){
 					if(err) {
 						logger.error("contactService.updateContactStats: updateContactStats: ", err);
@@ -22,8 +22,8 @@ exports.updateContactStats = function(user_sent_token, req_body, callback){
 					}
 					else {
 						if (qr.affectedRows < 1) {
-							// either that contactID doesn't exist, or it doesn't belong to you.
-							logger.warn("contactService.updateContactStats: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.contactID);
+							// either that c_id doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.updateContactStats: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.c_id);
 							callback(contracts.Bad_ContactID);
 						}
 						else {
@@ -42,13 +42,13 @@ exports.updateContactStats = function(user_sent_token, req_body, callback){
 */
 exports.updateContactInfo = function(user_sent_token, req_body, callback){
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
-		var custom = JSON.stringify(req_body.custom);
+		var other_info = JSON.stringify(req_body.other_info);
 		if (error) {
 			callback(error);
 		}
 		else {
 			db.query("CALL updateContact(?,?,?,?,?,?,?,?,?,?,?,?)", 
-				[decoded_token.id, req_body.contactID, req_body.fName, req_body.lName, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.linkedIn, req_body.address, req_body.description, custom],
+				[decoded_token.id, req_body.c_id, req_body.firstname, req_body.lastname, req_body.organization, req_body.position, req_body.email, req_body.phone, req_body.url_linkedin, req_body.mail_address, req_body.notes, other_info],
 				function(err, qr){
 					if(err) {
 						logger.error("contactService.updateContactInfo: updateContact: ", err);
@@ -57,8 +57,8 @@ exports.updateContactInfo = function(user_sent_token, req_body, callback){
 					else {
 						//logger.info("contactService.updateContactInfo: QR = ", qr);
 						if (qr.affectedRows < 1) {
-							// either that contactID doesn't exist, or it doesn't belong to you.
-							logger.warn("contactService.updateContactInfo: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.contactID);
+							// either that c_id doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.updateContactInfo: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.c_id);
 							callback(contracts.Bad_ContactID);
 						}
 						else {
@@ -82,7 +82,7 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 		else {
 			// Query DB for contacts
 			db.query("CALL getContactInfo(?,?)", 
-				[decoded_token.id, req_body.contactID],
+				[decoded_token.id, req_body.c_id],
 				function(err, qr){
 					if(err) {
 						logger.error("contactService.getContactInfo: getContactInfo: ", err);
@@ -90,13 +90,13 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 					}
 					else {
 						if (qr[0].length == 0) {
-							// either that contactID doesn't exist, or it doesn't belong to you.
-							logger.warn("contactService.getContactInfo: user, id=%d cannot access client, id=%d", decoded_token.id, req_body.contactID);
+							// either that c_id doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.getContactInfo: user, id=%d cannot access client, id=%d", decoded_token.id, req_body.c_id);
 							callback(contracts.Bad_ContactID);
 						}
 						else {
 							logger.info("contactService.getContactInfo: success.");//: %s", fullname);
-							callback( {'data': {'userInfo':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
+							callback( {'data': {'contact_info':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
 						}
 					}
 			});
@@ -140,8 +140,8 @@ exports.getContactList = function(user_sent_token, callback){
 	CREATE CONTACT: 
 */
 exports.createContact = function(user_sent_token, req_body, callback){
-	var fullname = req_body.fName + " " + req_body.lName;
-	var custom = JSON.stringify(req_body.custom);
+	var fullname = req_body.firstname + " " + req_body.lastname;
+	var custom = JSON.stringify(req_body.other_info);
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		if (error) {
 			// Any JWT error should require user to log in again.
@@ -150,7 +150,7 @@ exports.createContact = function(user_sent_token, req_body, callback){
 		else {
 			// Query DB for contacts
 			db.query("CALL newContact(?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-				[decoded_token.id, fullname, req_body.fName, req_body.lName, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.linkedIn, req_body.address, req_body.description, custom, req_body.created_milli], 
+				[decoded_token.id, fullname, req_body.firstname, req_body.lastname, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.url_linkedin, req_body.mail_address, req_body.notes, custom, req_body.created_milli], 
 				function(err, qr){
 					// var queryResult = {};
 					// queryResult = qr[0];

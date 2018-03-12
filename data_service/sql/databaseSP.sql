@@ -28,7 +28,7 @@ DROP PROCEDURE IF EXISTS getAllContacts;
 DELIMITER //
 CREATE PROCEDURE getAllContacts(IN user_id INT UNSIGNED)
 BEGIN
-   SELECT id, firstname, lastname, organization, created FROM contacts WHERE contacts.u_id = user_id;
+   SELECT c_id, firstname, lastname, organization, created FROM contacts WHERE contacts.u_id = user_id;
 END //
 DELIMITER ;
 
@@ -38,7 +38,7 @@ DROP PROCEDURE IF EXISTS getContactInfo;
 DELIMITER //
 CREATE PROCEDURE getContactInfo(IN user_id INT UNSIGNED, cont_id INT UNSIGNED)
 BEGIN
-   SELECT * FROM contacts WHERE contacts.u_id = user_id and contacts.id = cont_id;
+   SELECT * FROM contacts WHERE contacts.u_id = user_id and contacts.c_id = cont_id;
 END //
 DELIMITER ;
 
@@ -83,13 +83,56 @@ CREATE PROCEDURE updateContact(IN   user_id INT UNSIGNED,
 												u_notes VARCHAR(16384),
 												other VARCHAR(16384))
 BEGIN
-	UPDATE contacts 
-	SET	firstname = first_name, lastname = last_name, 
-			organization = org, position = job, 
-			email = c_email, phone = c_phone, 
-			url_linkedin = linkedin, mail_address = address, 
-			notes = u_notes, other_info = other
-	WHERE user_id = contacts.u_id and c_id = contacts.id;
+	-- UPDATE contacts 
+	-- SET	firstname = first_name, lastname = last_name, 
+			-- organization = org, position = job, 
+			-- email = c_email, phone = c_phone, 
+			-- url_linkedin = linkedin, mail_address = address, 
+			-- notes = u_notes, other_info = other
+	-- WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	
+	IF first_name IS NOT NULL THEN
+		UPDATE contacts SET firstname = first_name
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF last_name IS NOT NULL THEN
+		UPDATE contacts SET lastname = last_name
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF org IS NOT NULL THEN
+		UPDATE contacts SET organization = org
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF job IS NOT NULL THEN
+		UPDATE contacts SET position = job
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF c_email IS NOT NULL THEN
+		UPDATE contacts SET email = c_email
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF c_phone IS NOT NULL THEN
+		UPDATE contacts SET phone = c_phone
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF linkedin IS NOT NULL THEN
+		UPDATE contacts SET url_linkedin = linkedin
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF address IS NOT NULL THEN
+		UPDATE contacts SET mail_address = address
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF u_notes IS NOT NULL THEN
+		UPDATE contacts SET notes = u_notes
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF other IS NOT NULL THEN
+		UPDATE contacts SET other_info = other
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;	
+	
+	
 END //
 DELIMITER ;
 
@@ -99,7 +142,17 @@ DROP PROCEDURE IF EXISTS updateContactStats;
 DELIMITER //
 CREATE PROCEDURE updateContactStats(IN user_id INT UNSIGNED, c_id INT UNSIGNED, email_resp INT UNSIGNED, resume_req INT UNSIGNED, msgCall INT UNSIGNED)
 BEGIN
-	UPDATE contacts SET email_response = email_resp, resume_request = resume_req, msg_or_call_from = msgCall
-	WHERE user_id = contacts.u_id and c_id = contacts.id;
+	IF email_resp IS NOT NULL THEN
+		UPDATE contacts SET email_response = email_resp
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF resume_req IS NOT NULL THEN
+		UPDATE contacts SET resume_request = resume_req
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
+	IF msgCall IS NOT NULL THEN
+		UPDATE contacts SET msg_or_call_from = msgCall
+		WHERE user_id = contacts.u_id and c_id = contacts.c_id;
+	END IF;
 END //
 DELIMITER ;

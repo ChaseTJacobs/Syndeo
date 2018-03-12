@@ -47,8 +47,8 @@ exports.login = function(reqBody, callback){
 							callback(true, contracts.Bad_Creds, null);
 						}
 						else {
-							if ( !(queryResult["password"] === reqBody.pass )) {
-								logger.warn("accountService.login: passwords \'%s\' != \'%s\'", reqBody.pass, queryResult["password"] );
+							if ( !(queryResult["password"] === reqBody.password )) {
+								logger.warn("accountService.login: passwords \'%s\' != \'%s\'", reqBody.password, queryResult["password"] );
 								callback(true, contracts.Bad_Creds, null);
 							}
 							else if (false /* do something with queryResult["expiry_date"] */) {
@@ -57,7 +57,7 @@ exports.login = function(reqBody, callback){
 							}
 							else { 
 								user_email = queryResult["email"];
-								user_id = queryResult["id"];
+								user_id = queryResult["u_id"];
 								
 								// 3 - generate JWT
 								authService.generateToken(user_email, user_id, function(err, token) {
@@ -94,7 +94,7 @@ exports.createAccount = function(reqBody, callback){
 	*/
 	
 	// 2 - check user exists
-	var userInfo = JSON.stringify(reqBody.userInfo);
+	var userInfo = JSON.stringify(reqBody.user_info);
 	db.query("CALL isUserInDatabase(?)", 
 				[reqBody.email], 
 				function(err, qr){
@@ -120,7 +120,7 @@ exports.createAccount = function(reqBody, callback){
 							// addUser inserts new user, then returns userId and email for the JWT
 							// var userInfo = JSON.stringify(reqBody.userInfo); // moved up
 							db.query("Call addUser(?,?,?)",
-										[reqBody.email, reqBody.pass, userInfo], // stripe_token???
+										[reqBody.email, reqBody.password, userInfo], // stripe_token???
 										function (error, queryRes) {
 											queryResult = queryRes[0][0];
 											// console.log("\t\t \'addUser\' query result: "+JSON.stringify(queryResult));
@@ -131,7 +131,7 @@ exports.createAccount = function(reqBody, callback){
 											}
 											else { 
 												user_email = queryResult["email"];
-												user_id = queryResult["id"];
+												user_id = queryResult["u_id"];
 												
 												// 3 - generate JWT
 												authService.generateToken(user_email, user_id, function(err, token) {
@@ -140,7 +140,7 @@ exports.createAccount = function(reqBody, callback){
 													}
 													else {
 														logger.info("accountService.createAccount: created account for %s", reqBody.email);
-													callback(false, {'data':queryResult["user_info"], 'status':contracts.NewAcct_Success}, token);
+														callback(false, {'data':queryResult["user_info"], 'status':contracts.NewAcct_Success}, token);
 													}
 												});								
 											}

@@ -131,6 +131,8 @@ app.post('/createAccount', jsonParser, function (req, res) {
 // });
 
 
+
+
 app.post('/createContact', jsonParser, function (req, res) {
 	logger.info("hit \'createContact\'");
 	requestBodyHandler(contracts.createContact, req, res, 

@@ -59,7 +59,7 @@ exports.login =
 		'required':true,
 		'type':"string"
 	},
-	'pass':{
+	'password':{
 		'required':true,
 		'type':"string"		
 	}
@@ -71,15 +71,15 @@ exports.createAccount =
 		'required':true,
 		'type':"string"
 	},
-	'pass':{
+	'password':{
 		'required':true,
 		'type':"string"		
 	},
-	'userInfo':{
+	'user_info':{
 		'required':false,
 		'type':{'object':"object"}		
 	},
-	'stripeToken':{
+	'stripe_token':{
 		'required':false,
 		'type':"string"	
 	}
@@ -97,25 +97,27 @@ exports.getUserInfo = {}
 // - updateUserInfo
 exports.updateUserInfo = 
 {
-	'userInfo':{
+	'user_info':{
 		'required':true,
 		'type':{'object':"object"}		
 	}
 };
+// - getContactList (GET)
+exports.getContactList = {}
 // - makePayment???
 
 // - createContact
 exports.createContact =
 {
-	'fName':{
+	'firstname':{
 		'required':true,
 		'type':"string"
 	},
-	'lName':{
+	'lastname':{
 		'required':true,
 		'type':"string"		
 	},
-	'company':{
+	'organization':{
 		'required':false,
 		'type':"string"		
 	},
@@ -131,19 +133,19 @@ exports.createContact =
 		'required':false,
 		'type':"string"		
 	},
-	'linkedIn':{
+	'url_linkedin':{
 		'required':false,
 		'type':"string"		
 	},
-	'address':{
+	'mail_address':{
 		'required':false,
 		'type':"string"		
 	},
-	'description':{
+	'notes':{
 		'required':false,
 		'type':"string"		
 	},
-	'custom':{
+	'other_info':{
 		'required':false,
 		'type':{'object':"object"},
 	},
@@ -152,26 +154,102 @@ exports.createContact =
 		'type':5//millisecs
 	}
 };
-// - createActivity
-exports.createActivity = 
+// - getContactInfo
+exports.getContactInfo = 
 {
-	'contactID':{
+	'c_id':{
+		'required':true,
+		'type':5
+	}
+}
+// - updateContactInfo
+exports.updateContactInfo =
+{
+	'c_id':{
+		'required':true,
+		'type':5
+	},
+	'firstname':{
+		'required':false,
+		'type':"string"
+	},
+	'lastname':{
+		'required':false,
+		'type':"string"		
+	},
+	'organization':{
+		'required':false,
+		'type':"string"		
+	},
+	'position':{
+		'required':false,
+		'type':"string"	
+	},
+	'email':{
+		'required':false,
+		'type':"string"		
+	},
+	'phone':{
+		'required':false,
+		'type':"string"		
+	},
+	'url_linkedin':{
+		'required':false,
+		'type':"string"		
+	},
+	'mail_address':{
+		'required':false,
+		'type':"string"		
+	},
+	'notes':{
+		'required':false,
+		'type':"string"		
+	},
+	'other_info':{
+		'required':false,
+		'type':{'object':"object"}		
+	}
+};
+// - updateContactStats
+exports.updateContactStats =
+{
+	'c_id':{
+		'required':true,
+		'type':5
+	},
+	'email_response':{
 		'required':false,
 		'type':5
 	},
-	'actType':{
+	'resume_request':{
+		'required':false,
+		'type':5		
+	},
+	'msg_or_call_from':{
+		'required':false,
+		'type':5		
+	}
+};
+// - createActivity
+exports.createActivity = 
+{
+	'c_id':{
+		'required':false,
+		'type':5
+	},
+	'atype_id':{
 		'required':true,
 		'type':5
 	},
-	'actName':{
+	'activity_name':{
 		'required':true,
 		'type':"string"
 	},
-	'actDate':{
+	'event_date':{
 		'required':true,
 		'type':5
 	},
-	'description':{
+	'notes':{
 		'required':false,
 		'type':"string"
 	},
@@ -183,7 +261,7 @@ exports.createActivity =
 // - createIIscript
 exports.createIIscript = 
 {
-	'contactID':{
+	'c_id':{
 		'required':true,
 		'type':5
 	},
@@ -192,21 +270,10 @@ exports.createIIscript =
 		'type':"string"
 	}
 }
-// - getContactList (GET)
-exports.getContactList = {}
-
-// - getContactInfo
-exports.getContactInfo = 
-{
-	'contactID':{
-		'required':true,
-		'type':5
-	}
-}
 // - getContactActivities
 exports.getContactActivities =
 {
-	'contactID':{
+	'c_id':{
 		'required':true,
 		'type':5
 	}
@@ -214,101 +281,33 @@ exports.getContactActivities =
 // - getContactIIScripts
 exports.getContactIIScripts =
 {
-	'contactID':{
+	'c_id':{
 		'required':true,
 		'type':5
 	}
 }
 // - getIIScriptQs (GET)
 exports.getIIScriptQs = {}
-// - updateContactInfo
-exports.updateContactInfo =
-{
-	'contactID':{
-		'required':true,
-		'type':5
-	},
-	'fName':{
-		'required':true,
-		'type':"string"
-	},
-	'lName':{
-		'required':true,
-		'type':"string"		
-	},
-	'company':{
-		'required':true,
-		'type':"string"		
-	},
-	'position':{
-		'required':true,
-		'type':"string"	
-	},
-	'email':{
-		'required':true,
-		'type':"string"		
-	},
-	'phone':{
-		'required':true,
-		'type':"string"		
-	},
-	'linkedIn':{
-		'required':true,
-		'type':"string"		
-	},
-	'address':{
-		'required':true,
-		'type':"string"		
-	},
-	'description':{
-		'required':true,
-		'type':"string"		
-	},
-	'custom':{
-		'required':true,
-		'type':{'object':"object"}		
-	}
-};
-// - updateContactStats
-exports.updateContactStats =
-{
-	'contactID':{
-		'required':true,
-		'type':5
-	},
-	'email_response':{
-		'required':true,
-		'type':5
-	},
-	'resume_request':{
-		'required':true,
-		'type':5		
-	},
-	'msg_or_call_from':{
-		'required':true,
-		'type':5		
-	}
-};
 // - updateActivity
 exports.updateActivity = 
 {
-	'actID':{
+	'a_id':{
 		'required':true,
 		'type':5
 	},
-	'actType':{
+	'atype_id':{
 		'required':false,
 		'type':5
 	},
-	'actName':{
+	'activity_name':{
 		'required':false,
 		'type':"string"
 	},
-	'actDate':{
+	'event_date':{
 		'required':false,
 		'type':5
 	},
-	'description':{
+	'notes':{
 		'required':false,
 		'type':"string"
 	},
@@ -320,7 +319,11 @@ exports.updateActivity =
 // - updateContactIIScript
 exports.updateContactIIScript = 
 {
-	'scriptID':{
+	'ii_id':{
+		'required':true,
+		'type':5
+	},
+	'c_id':{
 		'required':true,
 		'type':5
 	},
@@ -332,7 +335,7 @@ exports.updateContactIIScript =
 // - deleteContact
 exports.deleteContact = 
 {
-	'contactID':{
+	'c_id':{
 		'required':true,
 		'type':5
 	}
@@ -340,7 +343,7 @@ exports.deleteContact =
 // - deleteActivity
 exports.deleteActivity = 
 {
-	'actID':{
+	'a_id':{
 		'required':true,
 		'type':5
 	}
@@ -348,7 +351,11 @@ exports.deleteActivity =
 // - deleteIIScript
 exports.deleteIIScript = 
 {
-	'scriptID':{
+	'ii_id':{
+		'required':true,
+		'type':5
+	},
+	'c_id':{
 		'required':true,
 		'type':5
 	}
@@ -358,7 +365,7 @@ exports.getModuleList = {}
 // - getModuleContent
 exports.getModuleContent = 
 {
-	'moduleID':{
+	'mod_id':{
 		'required':true,
 		'type':5
 	}
@@ -366,7 +373,7 @@ exports.getModuleContent =
 // - updateMyModules
 exports.updateMyModules = 
 {
-	'moduleID':{
+	'mod_id':{
 		'required':true,
 		'type':5
 	},
@@ -378,7 +385,7 @@ exports.updateMyModules =
 		'required':false,
 		'type':true
 	},
-	'inProgress':{
+	'in_progress':{
 		'required':false,
 		'type':true
 	}
@@ -390,15 +397,15 @@ exports.getAllCounters = {}
 // - updateGlobalCounters
 exports.updateGlobalCounters = 
 {
-	'emailResp':{
+	'email_response':{
 		'required':false,
 		'type':5
 	},
-	'resumeReq':{
+	'resume_request':{
 		'required':false,
 		'type':5
 	},
-	'msgORcall':{
+	'msg_or_call_from':{
 		'required':false,
 		'type':5
 	}
@@ -407,7 +414,7 @@ exports.updateGlobalCounters =
 
 /*
 	Syndeo API Response Body Contracts
-	- see our docs for more readable description
+	- see our docs for more readable notes
 */
 // General
 exports.DB_Access_Error = { 'data':"DB error. This is a problem.", 'status':299 };
@@ -425,7 +432,7 @@ exports.Username_Taken = { 'data':"an account already exists in connection with 
 exports.GetList_Success = 112;
 exports.NewContact_Success = 113;
 exports.GetContInfo_Success = 114;
-exports.Bad_ContactID = { 'data':"requested contact info with bad contactID", 'status':214 }; // getContactInfo
+exports.Bad_ContactID = { 'data':"requested contact info with bad c_id", 'status':214 }; // getContactInfo
 exports.UpdateContInfo_Success = { 'data':"success", 'status':115 }; // updateContactInfo
 exports.UpdateContStats_Success = { 'data':"success", 'status':116 }; // updateContactStats
 
