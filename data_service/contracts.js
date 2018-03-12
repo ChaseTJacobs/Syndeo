@@ -424,7 +424,6 @@ exports.Username_Taken = { 'data':"an account already exists in connection with 
 // Contact Service
 exports.GetList_Success = 112;
 exports.NewContact_Success = 113;
-
 exports.GetContInfo_Success = 114;
 exports.Bad_ContactID = { 'data':"requested contact info with bad contactID", 'status':214 }; // getContactInfo
 exports.UpdateContInfo_Success = { 'data':"success", 'status':115 }; // updateContactInfo

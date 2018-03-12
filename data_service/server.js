@@ -122,13 +122,13 @@ app.post('/createAccount', jsonParser, function (req, res) {
 });
 
 
-app.post('/forgotPassword', jsonParser, function (req, res) {
-	logger.info("hit \'forgotPassword\'");
-	requestBodyHandler(contracts.forgotPassword, req, res, 
-		function (req, res) {
-			accountService.forgotPassword( req.body, (response) => res.send(response))
-		});
-});
+// app.post('/forgotPassword', jsonParser, function (req, res) {
+	// logger.info("hit \'forgotPassword\'");
+	// requestBodyHandler(contracts.forgotPassword, req, res, 
+		// function (req, res) {
+			// accountService.forgotPassword( req.body, (response) => res.send(response))
+		// });
+// });
 
 
 app.post('/createContact', jsonParser, function (req, res) {
