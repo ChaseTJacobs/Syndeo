@@ -3,10 +3,130 @@ var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
-// exports.forgotPassword = function(reqBody, callback){
-	
-// }
 
+exports.getAllCounters = function(user_sent_token, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL getAllCounters(?)", 
+				[decoded_token.id],
+				function(err, qr){
+					if(err) {
+						logger.error("accountService.getAllCounters: getAllCounters (sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr[0].length == 0) {
+							logger.warn("accountService.getAllCounters: could not access counters for user, id=%d", decoded_token.id);
+							callback(contracts.Bad_UserID);
+						}
+						else {
+							logger.info("accountService.getAllCounters: success.");
+							callback( {'data': qr[0][0], 'status':contracts.GetAllCounters_Success} );
+						}
+					}
+			});
+		}
+	});
+}
+
+
+exports.updateGlobalCounters = function(user_sent_token, req_body, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL updateGlobalCounters(?,?,?,?)", 
+				[decoded_token.id, req_body.email_response, req_body.resume_request, req_body.msg_or_call_from],
+				function(err, qr){
+					if(err) {
+						logger.error("accountService.updateGlobalCounters: updateGlobalCounters(sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr.affectedRows < 1) {
+							logger.warn("accountService.updateGlobalCounters: could update counters for user, id=%d", decoded_token.id);
+							callback(contracts.Bad_UserID);
+						}
+						else {
+							logger.info("accountService.updateGlobalCounters: success.");
+							callback( contracts.UpdateGcounters_Success );
+						}
+					}
+			});
+		}
+	});
+}
+
+
+exports.updateUserInfo = function(user_sent_token, req_body, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		var user_info = JSON.stringify(req_body.user_info);
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL updateUserInfo(?,?)", 
+				[decoded_token.id, user_info],
+				function(err, qr){
+					if(err) {
+						logger.error("accountService.updateUserInfo: updateUserInfo(sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr.affectedRows < 1) {
+							// the security of JWT's means this should never happen...
+							logger.warn("accountService.updateUserInfo: could not access user, id=%d", decoded_token.id);
+							callback(contracts.Bad_UserID);
+						}
+						else {
+							logger.info("accountService.updateUserInfo: success.");
+							callback( contracts.UpdateUinfo_Success );
+						}
+					}
+			});
+		}
+	});
+}
+
+
+exports.getUserInfo = function(user_sent_token, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL getUserInfo(?)", 
+				[decoded_token.id],
+				function(err, qr){
+					if(err) {
+						logger.error("accountService.getUserInfo: getUserInfo (sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr[0].length == 0) {
+							// the security of JWT's means this should never happen...
+							logger.warn("accountService.getUserInfo: could not access user, id=%d", decoded_token.id);
+							// TODO: status code for this...
+							callback(contracts.Bad_UserID);
+						}
+						else {
+							logger.info("accountService.getUserInfo: success.");
+							// TODO: status code for this...
+							callback( {'data': qr[0][0], 'status':contracts.GetUinfo_Success} );
+						}
+					}
+			});
+		}
+	});
+}
+
+
+// exports.forgotPassword = function(reqBody, callback){
+// }
 
 
 /* Log In:

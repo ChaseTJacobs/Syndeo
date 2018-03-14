@@ -5,6 +5,8 @@ var logger = 			require('winston');
 var authService = 	require('./authService');
 var accountService = require('./accountService');
 var contactService = require('./contactService');
+var activityService = require('./activityService');
+var iiScriptService = require('./iiScriptService');
 var contracts = 		require('./contracts');
 var env = 				require('./environment');
 
@@ -103,7 +105,6 @@ app.post('/login', jsonParser, function(req, res) {
 		});
 });
 
-
 app.post('/createAccount', jsonParser, function (req, res) {
 	logger.info("hit \'createAccount\'");
 	requestBodyHandler(contracts.createAccount, req, res, 
@@ -121,6 +122,21 @@ app.post('/createAccount', jsonParser, function (req, res) {
 		});
 });
 
+app.get('/getUserInfo', jsonParser, function (req, res) {
+	logger.info("hit \'getUserInfo\'");
+	requestBodyHandler(contracts.getUserInfo, req, res, 
+		function (req, res) {
+			accountService.getUserInfo(req.get('Authorization'), (response) => res.send(response))
+		});
+});
+
+app.post('/updateUserInfo', jsonParser, function (req, res) {
+	logger.info("hit \'updateUserInfo\'");
+	requestBodyHandler(contracts.updateUserInfo, req, res, 
+		function (req, res) {
+			accountService.updateUserInfo(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
 
 // app.post('/forgotPassword', jsonParser, function (req, res) {
 	// logger.info("hit \'forgotPassword\'");
@@ -130,7 +146,21 @@ app.post('/createAccount', jsonParser, function (req, res) {
 		// });
 // });
 
+app.post('/updateGlobalCounters', jsonParser, function (req, res) {
+	logger.info("hit \'updateGlobalCounters\'");
+	requestBodyHandler(contracts.updateGlobalCounters, req, res, 
+		function (req, res) {
+			accountService.updateGlobalCounters(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
 
+app.get('/getAllCounters', jsonParser, function (req, res) {
+	logger.info("hit \'getAllCounters\'");
+	requestBodyHandler(contracts.getAllCounters, req, res, 
+		function (req, res) {
+			accountService.getAllCounters(req.get('Authorization'), (response) => res.send(response))
+		});
+});
 
 
 app.post('/createContact', jsonParser, function (req, res) {
@@ -141,6 +171,13 @@ app.post('/createContact', jsonParser, function (req, res) {
 		});
 });
 
+app.post('/deleteContact', jsonParser, function (req, res) {
+	logger.info("hit \'deleteContact\'");
+	requestBodyHandler(contracts.deleteContact, req, res, 
+		function (req, res) {
+			contactService.deleteContact(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
 
 app.get('/getContactList', jsonParser, function (req, res) {
 	logger.info("hit \'getContactList\'");
@@ -150,7 +187,6 @@ app.get('/getContactList', jsonParser, function (req, res) {
 		});
 });
 
-
 app.post('/getContactInfo', jsonParser, function (req, res) {
 	logger.info("hit \'getContactInfo\'");
 	requestBodyHandler(contracts.getContactInfo, req, res, 
@@ -158,7 +194,6 @@ app.post('/getContactInfo', jsonParser, function (req, res) {
 			contactService.getContactInfo(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 
 app.post('/updateContactInfo', jsonParser, function (req, res) {
 	logger.info("hit \'updateContactInfo\'");
@@ -168,7 +203,6 @@ app.post('/updateContactInfo', jsonParser, function (req, res) {
 		});
 });
 
-
 app.post('/updateContactStats', jsonParser, function (req, res) {
 	logger.info("hit \'updateContactStats\'");
 	requestBodyHandler(contracts.updateContactStats, req, res, 
@@ -177,6 +211,103 @@ app.post('/updateContactStats', jsonParser, function (req, res) {
 		});
 });
 
+
+app.post('/createActivity', jsonParser, function (req, res) {
+	logger.info("hit \'createActivity\'");
+	requestBodyHandler(contracts.createActivity, req, res, 
+		function (req, res) {
+			activityService.createActivity(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/deleteActivity', jsonParser, function (req, res) {
+	logger.info("hit \'deleteActivity\'");
+	requestBodyHandler(contracts.deleteActivity, req, res, 
+		function (req, res) {
+			activityService.deleteActivity(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.get('/getActivityList', jsonParser, function (req, res) {
+	logger.info("hit \'getActivityList\'");
+	requestBodyHandler(contracts.getActivityList, req, res, 
+		function (req, res) {
+			activityService.getActivityList(req.get('Authorization'), (response) => res.send(response))
+		});
+});
+
+app.post('/getContactActivities', jsonParser, function (req, res) {
+	logger.info("hit \'getContactActivities\'");
+	requestBodyHandler(contracts.getContactActivities, req, res, 
+		function (req, res) {
+			activityService.getContactActivities(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/updateActivity', jsonParser, function (req, res) {
+	logger.info("hit \'updateActivity\'");
+	requestBodyHandler(contracts.updateActivity, req, res, 
+		function (req, res) {
+			activityService.updateActivity(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+
+app.get('/getIIScriptQs', jsonParser, function (req, res) {
+	logger.info("hit \'getIIScriptQs\'");
+	requestBodyHandler(contracts.getIIScriptQs, req, res, 
+		function (req, res) {
+			iiScriptService.getIIScriptQs(req.get('Authorization'), (response) => res.send(response))
+		});
+});
+
+app.post('/createIIScriptQ', jsonParser, function (req, res) {
+	logger.info("hit \'createIIScriptQ\'");
+	requestBodyHandler(contracts.createIIScriptQ, req, res, 
+		function (req, res) {
+			iiScriptService.createIIScriptQ(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/deleteIIScriptQ', jsonParser, function (req, res) {
+	logger.info("hit \'deleteIIScriptQ\'");
+	requestBodyHandler(contracts.deleteIIScriptQ, req, res, 
+		function (req, res) {
+			iiScriptService.deleteIIScriptQ(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/updateIIscript', jsonParser, function (req, res) {
+	logger.info("hit \'updateIIscript\'");
+	requestBodyHandler(contracts.updateIIscript, req, res, 
+		function (req, res) {
+			iiScriptService.updateIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/getContactIIScripts', jsonParser, function (req, res) {
+	logger.info("hit \'getContactIIScripts\'");
+	requestBodyHandler(contracts.getContactIIScripts, req, res, 
+		function (req, res) {
+			iiScriptService.getContactIIScripts(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/createIIscript', jsonParser, function (req, res) {
+	logger.info("hit \'createIIscript\'");
+	requestBodyHandler(contracts.createIIscript, req, res, 
+		function (req, res) {
+			iiScriptService.createIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+app.post('/deleteIIscript', jsonParser, function (req, res) {
+	logger.info("hit \'deleteIIscript\'");
+	requestBodyHandler(contracts.deleteIIscript, req, res, 
+		function (req, res) {
+			iiScriptService.deleteIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
 
 /* --------------- App content endpoint ----------------- */
 // specify path for our static content

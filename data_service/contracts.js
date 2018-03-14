@@ -52,9 +52,7 @@ exports.enforce = function(req, contract, callback){
 }
 
 
-// - login (does not require JWT in header)
-exports.login = 
-{
+exports.login = {
 	'email':{
 		'required':true,
 		'type':"string"
@@ -64,9 +62,7 @@ exports.login =
 		'type':"string"		
 	}
 };
-// - createAccount (does not require JWT in header)
-exports.createAccount = 
-{
+exports.createAccount = {
 	'email':{
 		'required':true,
 		'type':"string"
@@ -84,31 +80,22 @@ exports.createAccount =
 		'type':"string"	
 	}
 };
-// - forgotPassword (does not require JWT in header)
-exports.forgotPassword =
-{
+exports.forgotPassword = {
 	'email':{
 		'required':true,
 		'type':"string"
 	}
 };
-// - getUserInfo (GET)
 exports.getUserInfo = {}
-// - updateUserInfo
-exports.updateUserInfo = 
-{
+exports.updateUserInfo = {
 	'user_info':{
 		'required':true,
 		'type':{'object':"object"}		
 	}
 };
-// - getContactList (GET)
 exports.getContactList = {}
 // - makePayment???
-
-// - createContact
-exports.createContact =
-{
+exports.createContact = {
 	'firstname':{
 		'required':true,
 		'type':"string"
@@ -154,17 +141,13 @@ exports.createContact =
 		'type':5//millisecs
 	}
 };
-// - getContactInfo
-exports.getContactInfo = 
-{
+exports.getContactInfo = {
 	'c_id':{
 		'required':true,
 		'type':5
 	}
 }
-// - updateContactInfo
-exports.updateContactInfo =
-{
+exports.updateContactInfo = {
 	'c_id':{
 		'required':true,
 		'type':5
@@ -210,9 +193,7 @@ exports.updateContactInfo =
 		'type':{'object':"object"}		
 	}
 };
-// - updateContactStats
-exports.updateContactStats =
-{
+exports.updateContactStats = {
 	'c_id':{
 		'required':true,
 		'type':5
@@ -230,9 +211,19 @@ exports.updateContactStats =
 		'type':5		
 	}
 };
-// - createActivity
-exports.createActivity = 
-{
+exports.deleteContact = {
+	'c_id':{
+		'required':true,
+		'type':5
+	}
+}
+exports.deleteActivity = {
+	'a_id':{
+		'required':true,
+		'type':5
+	}
+}
+exports.createActivity = {
 	'c_id':{
 		'required':false,
 		'type':5
@@ -255,12 +246,44 @@ exports.createActivity =
 	},
 	'completed':{
 		'required':false,
+		'type':5 // 0/1 = t/f
+	}
+}
+exports.getContactActivities = {
+	'c_id':{
+		'required':true,
+		'type':5
+	}
+}
+exports.getActivityList = {}
+exports.updateActivity = {
+	// No c_id here. can't change who an activity belongs to.
+	'a_id':{
+		'required':true,
+		'type':5
+	},
+	'atype_id':{
+		'required':false,
+		'type':5
+	},
+	'activity_name':{
+		'required':false,
+		'type':"string"
+	},
+	'event_date':{
+		'required':false,
+		'type':5
+	},
+	'notes':{
+		'required':false,
+		'type':"string"
+	},
+	'completed':{
+		'required':false,
 		'type':true
 	}
 }
-// - createIIscript
-exports.createIIscript = 
-{
+exports.createIIscript = {
 	'c_id':{
 		'required':true,
 		'type':5
@@ -270,55 +293,26 @@ exports.createIIscript =
 		'type':"string"
 	}
 }
-// - getContactActivities
-exports.getContactActivities =
-{
+exports.getContactIIScripts = {
 	'c_id':{
 		'required':true,
 		'type':5
 	}
 }
-// - getContactIIScripts
-exports.getContactIIScripts =
-{
-	'c_id':{
-		'required':true,
-		'type':5
-	}
-}
-// - getIIScriptQs (GET)
 exports.getIIScriptQs = {}
-// - updateActivity
-exports.updateActivity = 
-{
-	'a_id':{
+exports.createIIScriptQ = {
+	'text':{
 		'required':true,
-		'type':5
-	},
-	'atype_id':{
-		'required':false,
-		'type':5
-	},
-	'activity_name':{
-		'required':false,
 		'type':"string"
-	},
-	'event_date':{
-		'required':false,
-		'type':5
-	},
-	'notes':{
-		'required':false,
-		'type':"string"
-	},
-	'completed':{
-		'required':false,
-		'type':true
 	}
 }
-// - updateContactIIScript
-exports.updateContactIIScript = 
-{
+exports.deleteIIScriptQ = {
+	'q_id':{
+		'required':true,
+		'type':5
+	}
+}
+exports.updateIIscript = {
 	'ii_id':{
 		'required':true,
 		'type':5
@@ -332,25 +326,7 @@ exports.updateContactIIScript =
 		'type':"string"
 	}
 }
-// - deleteContact
-exports.deleteContact = 
-{
-	'c_id':{
-		'required':true,
-		'type':5
-	}
-}
-// - deleteActivity
-exports.deleteActivity = 
-{
-	'a_id':{
-		'required':true,
-		'type':5
-	}
-}
-// - deleteIIScript
-exports.deleteIIScript = 
-{
+exports.deleteIIscript = {
 	'ii_id':{
 		'required':true,
 		'type':5
@@ -360,19 +336,14 @@ exports.deleteIIScript =
 		'type':5
 	}
 }
-// - getModuleList (GET)
 exports.getModuleList = {}
-// - getModuleContent
-exports.getModuleContent = 
-{
+exports.getModuleContent = {
 	'mod_id':{
 		'required':true,
 		'type':5
 	}
 }
-// - updateMyModules
-exports.updateMyModules = 
-{
+exports.updateMyModules = {
 	'mod_id':{
 		'required':true,
 		'type':5
@@ -390,18 +361,13 @@ exports.updateMyModules =
 		'type':true
 	}
 }
-// - getActivityList (GET)
-exports.getActivityList = {}
-// - getAllCounters (GET)
 exports.getAllCounters = {}
-// - updateGlobalCounters
-exports.updateGlobalCounters = 
-{
+exports.updateGlobalCounters = {
 	'email_response':{
 		'required':false,
 		'type':5
 	},
-	'resume_request':{
+	'resume_request':{      
 		'required':false,
 		'type':5
 	},
@@ -418,6 +384,7 @@ exports.updateGlobalCounters =
 */
 // General
 exports.DB_Access_Error = { 'data':"DB error. This is a problem.", 'status':299 };
+// IDEA: in event of "DB_Access_Error", requested changes should be saved locally and tried again later.
 exports.Stripe_Error = { 'data':"Stripe Token Error", 'status':298 };
 // Auth Service
 exports.JWT_Generation_Error = { 'data':"Could not generate JWT.", 'status':297 };
@@ -432,15 +399,44 @@ exports.Username_Taken = { 'data':"an account already exists in connection with 
 exports.GetList_Success = 112;
 exports.NewContact_Success = 113;
 exports.GetContInfo_Success = 114;
-exports.Bad_ContactID = { 'data':"requested contact info with bad c_id", 'status':214 }; // getContactInfo
+exports.Bad_ContactID = { 'data':"requested contact info/activity with bad c_id", 'status':214 }; // getContactInfo
 exports.UpdateContInfo_Success = { 'data':"success", 'status':115 }; // updateContactInfo
 exports.UpdateContStats_Success = { 'data':"success", 'status':116 }; // updateContactStats
-
-
-
-
-
-
-
-
-
+// more Account Service
+exports.Bad_UserID = { 'data':"requested with possible bad u_id.", 'status':215 }; // getUserInfo // JWT breach or account delete shortly after login.
+exports.GetUinfo_Success = 117;
+exports.UpdateUinfo_Success = { 'data':"Success", 'status':118 };
+/*
+			TODO: integrate request & response contracts.
+			TODO: make the status codes make sense relationship-wise.
+			TODO: implement "contracts.______" functionality on the front-end.
+*/
+// more Contact Service
+exports.DeleteContact_Success = { 'data':"Success", 'status':119 };
+// Activities
+exports.NewActivity_Success = { 'data':"Success", 'status':120 };
+exports.NewActivity_Failure = { 'data':"Failure. There are a number of reasons why this might happen", 'status':216 };
+exports.GetActs_Success = 121;
+exports.No_Activities = { 'data':"you appear to have created zero activities", 'status':122 };
+exports.GetContActs_Success = 123;
+exports.No_ContActs = { 'data':"0 activities associated with this contact", 'status':124 };
+exports.DeleteAct_Success = { 'data':"Success", 'status':125 };
+exports.Bad_ActivityID = { 'data':"bad activity id.", 'status':217 };
+exports.UpdateAct_Success = { 'data':"Success", 'status':126 };
+// iiScripts
+exports.NewIIscript_Success = { 'data':"Success", 'status':127 };
+exports.NewIIscript_Failure = { 'data':"Failure", 'status':218 };
+exports.DeleteIIscript_Success = { 'data':"Success", 'status':128 };
+exports.DeleteIIscript_Failure = { 'data':"Failure. 1 or more of (c_id, ii_id) may be in error", 'status':219 };
+exports.GetIIscript_Success = 129;
+exports.UpdateIIscript_Success = { 'data':"Success", 'status':130 };
+exports.UpdateIIscript_Failure = { 'data':"Failure. 1 or more of (c_id, ii_id) may be in error", 'status':220 };
+exports.GetContIIscripts_Success = 131;
+exports.No_GetContIIscripts = { 'data':"this contact has 0 iiScripts", 'status':132 }; // could be bad ii_id, c_id,
+exports.NewQ_Failure = { 'data':"Failure. Couldn't save your custom iiScripts Question", 'status':221 };
+exports.NewQ_Success = { 'data':"Success. custom iiScript Question saved", 'status':133 };
+exports.DeleteQ_Failure = { 'data':"Failure. Couldn't delete your custom iiScripts Question", 'status':222 };
+exports.DeleteQ_Success = { 'data':"Success. custom iiScript Question deleted", 'status':134 };
+// more Account (counters)
+exports.UpdateGcounters_Success = { 'data':"Success. global counters updated", 'status':135 };
+exports.GetAllCounters_Success = 136;

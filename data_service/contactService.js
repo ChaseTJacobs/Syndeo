@@ -4,9 +4,37 @@ var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
 
-/*
-	UPDATE CONTACT STATS:
-*/
+// TODO: Test...
+exports.deleteContact = function(user_sent_token, req_body, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL deleteContact(?,?)", 
+				[decoded_token.id, req_body.c_id],
+				function(err, qr){
+					if(err) {
+						logger.error("contactService.deleteContact: deleteContact(sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr.affectedRows < 1) {
+							// either that c_id doesn't exist, or it doesn't belong to you.
+							logger.warn("contactService.deleteContact: user, u_id=%d cannot delete contact, c_id=%d", decoded_token.id, req_body.c_id);
+							callback(contracts.Bad_ContactID);
+						}
+						else {
+							logger.info("contactService.deleteContact: success.");
+							callback( contracts.DeleteContact_Success );
+						}
+					}
+			});
+		}
+	});
+}
+
+
 exports.updateContactStats = function(user_sent_token, req_body, callback){
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		if (error) {
@@ -23,7 +51,7 @@ exports.updateContactStats = function(user_sent_token, req_body, callback){
 					else {
 						if (qr.affectedRows < 1) {
 							// either that c_id doesn't exist, or it doesn't belong to you.
-							logger.warn("contactService.updateContactStats: user, id=%d cannot modify client, id=%d", decoded_token.id, req_body.c_id);
+							logger.warn("contactService.updateContactStats: user, u_id=%d cannot modify contact, c_id=%d", decoded_token.id, req_body.c_id);
 							callback(contracts.Bad_ContactID);
 						}
 						else {
@@ -37,9 +65,6 @@ exports.updateContactStats = function(user_sent_token, req_body, callback){
 }
 
 
-/*
-	UPDATE CONTACT INFO:
-*/
 exports.updateContactInfo = function(user_sent_token, req_body, callback){
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		var other_info = JSON.stringify(req_body.other_info);
@@ -71,9 +96,7 @@ exports.updateContactInfo = function(user_sent_token, req_body, callback){
 	});
 }
 
-/*
-	GET CONTACT INFO:
-*/
+
 exports.getContactInfo = function(user_sent_token, req_body, callback){
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		if (error) {
@@ -105,9 +128,6 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 }
 
 
-/* 
-	GET CONTACT LIST:
-*/
 exports.getContactList = function(user_sent_token, callback){
 	authService.verifyToken(user_sent_token, function(error, decoded_token) {
 		if (error) {
@@ -136,9 +156,6 @@ exports.getContactList = function(user_sent_token, callback){
 }
 
 
-/* 
-	CREATE CONTACT: 
-*/
 exports.createContact = function(user_sent_token, req_body, callback){
 	var fullname = req_body.firstname + " " + req_body.lastname;
 	var custom = JSON.stringify(req_body.other_info);
