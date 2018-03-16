@@ -46,47 +46,6 @@ requestBodyHandler = function(contract, req, res, callback) {
 	}
 }
 
-/*-----------------------------------------------------
-Endpoints
-- Deleting & Updating ANYTHING should require validation of the user-to-whateverobject relationship
-
-	Account endpoints:
-	- login
-	- createAccount
-	- updateUserInfo
-	- forgotPassword
-	- getUserInfo ???
-	- makePayment ???
-
-	NRM endpoints:
-	- createContact
-	- createActivity
-	- createIIscript
-	- getContactList
-	- getContactInfo // includes numbers
-	- getContactActivities
-	- getContactIIScripts
-	- getIIScriptQs
-	- updateContactInfo(c_id) // includes numbers
-	- updateActivity(a_id)
-	- updateContactIIScript(script_id)
-	- deleteContact(c_id)
-	- deleteActivity(a_id)
-	- deleteIIScript(script_id)
-
-	Module endpoints:
-	- getModuleList
-	- getModuleContent
-	- updateMyModules
-
-	Calendar endpoints:
-	- getActivityList
-
-	Stats endpoints:
-	- getAllCounters
-	- updateGlobalCounters
-
------------------------------------------------------*/
 
 app.post('/login', jsonParser, function(req, res) {
 	logger.info("hit \'login\'");
@@ -211,6 +170,14 @@ app.post('/updateContactStats', jsonParser, function (req, res) {
 		});
 });
 
+
+app.get('/getActivityTypes', jsonParser, function (req, res) {
+	logger.info("hit \'getActivityTypes\'");
+	requestBodyHandler(contracts.getActivityTypes, req, res, 
+		function (req, res) {
+			activityService.getActivityTypes(req.get('Authorization'), (response) => res.send(response))
+		});
+});
 
 app.post('/createActivity', jsonParser, function (req, res) {
 	logger.info("hit \'createActivity\'");

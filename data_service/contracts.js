@@ -255,6 +255,7 @@ exports.getContactActivities = {
 		'type':5
 	}
 }
+exports.getActivityTypes = {}
 exports.getActivityList = {}
 exports.updateActivity = {
 	// No c_id here. can't change who an activity belongs to.
@@ -440,3 +441,5 @@ exports.DeleteQ_Success = { 'data':"Success. custom iiScript Question deleted", 
 // more Account (counters)
 exports.UpdateGcounters_Success = { 'data':"Success. global counters updated", 'status':135 };
 exports.GetAllCounters_Success = 136;
+// more Activities
+exports.GetActType_Success = 137;

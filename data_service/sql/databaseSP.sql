@@ -211,6 +211,16 @@ END //
 DELIMITER ;
 
 
+select '...procedure create - getActivityTypes' AS '';
+DROP PROCEDURE IF EXISTS getActivityTypes;
+DELIMITER //
+CREATE PROCEDURE getActivityTypes(IN user_id INT UNSIGNED)
+BEGIN
+   SELECT atype_id, activity_type FROM activity_types;
+END //
+DELIMITER ;
+
+
 select '...procedure create - newActivity' AS '';
 DROP PROCEDURE IF EXISTS newActivity;
 DELIMITER //

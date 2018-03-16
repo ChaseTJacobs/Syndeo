@@ -3,7 +3,35 @@ var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
-// TODO - TEST all of these...
+exports.getActivityTypes = function(user_sent_token, callback){
+	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+		if (error) {
+			// Any JWT error should require user to log in again.
+			callback(error);
+		}
+		else {
+			// Query DB for contacts
+			db.query("CALL getActivityTypes(?)", 
+				[decoded_token.id], 
+				function(err, qr){
+					if(err) {
+						logger.error("activityService.getActivityTypes: getActivityTypes(sql): ", err);
+						callback(contracts.DB_Access_Error);
+					}
+					else {
+						if (qr[0].length == 0) {
+							logger.warn("activityService.getActivityTypes: no activities exist (empty activity type table)");
+							callback( contracts.DB_Access_Error );
+						}
+						else {
+							logger.info("activityService.getActivityTypes: success.");
+							callback( {'data': {'activity_types':qr[0]}, 'status':contracts.GetActType_Success} );
+						}
+					}
+			});
+		}
+	});
+}
 
 
 exports.updateActivity = function(user_sent_token, req_body, callback){
