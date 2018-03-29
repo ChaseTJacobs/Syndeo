@@ -36,24 +36,24 @@ CALL newContact(2, "Drew Eagar", "Drew", "Eagar", "BYU-Idaho", "Marketing Depart
 CALL newContact(3, "Kimberly Dean", "Kimberly", "Dean", NULL, "Boss", "kimberly.morgan39@gmail.com", "18015607296", "kim@linkedin.com", "151 W 4th S apt 208", "Kim Rox. Kim is the extra most bestest.", "[]", 1521828774255);
 
 
-CALL newActivity(1, 1, 3, "Hangin Out", 1000000, "notes about this meeting.....");
-CALL newActivity(1, 2, 1, "Bizznass", 1000002, "gonna crush this");
-CALL newActivity(1, 2, 2, "Mo Bizznass", 1000003, "dont hurt my chiuaua!");
+CALL newActivity(1, 1, 3, "Hangin Out", 1000000, "notes about this meeting.....", NULL, NULL);
+CALL newActivity(1, 2, 1, "Bizznass", 1000002, "gonna crush this", NULL, NULL);
+CALL newActivity(1, 2, 2, "Mo Bizznass", 1000003, "dont hurt my chiuaua!", NULL, NULL);
 
-CALL newActivity(2, 4, 2, "Informational Interview", 1522440000000, "Test Activity");
-CALL newActivity(2, 4, 3, "Phone Call", 1518752700000, "Test Activity");
-CALL newActivity(2, 4, 3, "Phone Call", 1521848400000, "Test Activity");
-CALL newActivity(2, 4, 1, "Send Email", 1521784800000, "Test Activity");
-CALL newActivity(2, 4, 5, "Interview", 1524531900000, "Test Activity");
-CALL newActivity(2, 4, 6, "Test Activity", 1525154400000, "This is different");
-CALL newActivity(2, 4, 1, "Send Email", 1524502800000, "Test Activity");
-CALL newActivity(2, 7, 1, "Send Email", 1524498600000, "Follow up with previous email.");
-CALL newActivity(2, 7, 3, "Phone Call", 1524542400000, "Call asking about previous email.");
-CALL newActivity(2, 7, 1, "Send Email", 1523080800000, "Ask art about his ties with Melaluca");
-CALL newActivity(2, 7, 1, "Send Email", 1519974000000, "Follow up introduction email with questions about past work activities.");
-CALL newActivity(2, 7, 1, "Send Email", 1514876400000, "Send introduction email.");
-CALL newActivity(2, 6, 4, "Meeting", 1521831600000, "Meeting with Head of Marketing Department. Formal Dress :(");
-CALL newActivity(2, 9, 6, "Coffee Meeting", 1522533600000, "Here we go!");
+CALL newActivity(2, 4, 2, "Informational Interview", 1522440000000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 4, 3, "Phone Call", 1518752700000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 4, 3, "Phone Call", 1521848400000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 4, 1, "Send Email", 1521784800000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 4, 5, "Interview", 1524531900000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 4, 6, "Test Activity", 1525154400000, "This is different", NULL, NULL);
+CALL newActivity(2, 4, 1, "Send Email", 1524502800000, "Test Activity", NULL, NULL);
+CALL newActivity(2, 7, 1, "Send Email", 1524498600000, "Follow up with previous email.", NULL, NULL);
+CALL newActivity(2, 7, 3, "Phone Call", 1524542400000, "Call asking about previous email.", NULL, NULL);
+CALL newActivity(2, 7, 1, "Send Email", 1523080800000, "Ask art about his ties with Melaluca", NULL, NULL);
+CALL newActivity(2, 7, 1, "Send Email", 1519974000000, "Follow up introduction email with questions about past work activities.", NULL, NULL);
+CALL newActivity(2, 7, 1, "Send Email", 1514876400000, "Send introduction email.", NULL, NULL);
+CALL newActivity(2, 6, 4, "Meeting", 1521831600000, "Meeting with Head of Marketing Department. Formal Dress :(", NULL, NULL);
+CALL newActivity(2, 9, 6, "Coffee Meeting", 1522533600000, "Here we go!", NULL, NULL);
 
 CALL newIIscript(1, 2, "This could\nBe one flipping\nHuge blob of text.\nBut its\nNot.");
 
