@@ -6,14 +6,14 @@ var logger = 			require('winston');
 // TODO - TEST all of these...
 
 exports.updateIIscript = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			// Any JWT error should require user to log in again.
 			callback(error);
 		}
 		else {
 			db.query("CALL updateIIscript(?,?,?,?)", 
-				[decoded_token.id, req_body.ii_id, req_body.c_id, req_body.text], 
+				[decoded_token.u_id, req_body.ii_id, req_body.c_id, req_body.text], 
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.updateIIscript: updateIIscript(sql): ", err);
@@ -21,7 +21,7 @@ exports.updateIIscript = function(user_sent_token, req_body, callback){
 					}
 					else {
 						if (qr.affectedRows < 1) {
-							logger.warn("iiScriptService.updateIIscript: user %d cannot modify iiScript %d", decoded_token.id, req_body.ii_id);
+							logger.warn("iiScriptService.updateIIscript: user %d cannot modify iiScript %d", decoded_token.u_id, req_body.ii_id);
 							callback(contracts.UpdateIIscript_Failure);
 						}
 						else {
@@ -36,7 +36,7 @@ exports.updateIIscript = function(user_sent_token, req_body, callback){
 
 
 exports.getIIScriptQs = function(user_sent_token, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			// Any JWT error should require user to log in again.
 			callback(error);
@@ -44,7 +44,7 @@ exports.getIIScriptQs = function(user_sent_token, callback){
 		else {
 			// Query DB for contacts
 			db.query("CALL getIIscriptQs(?)", 
-				[decoded_token.id], 
+				[decoded_token.u_id], 
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.getIIScriptQs: getIIscriptQs(sql): ", err);
@@ -52,7 +52,7 @@ exports.getIIScriptQs = function(user_sent_token, callback){
 					}
 					else {
 						if (qr[0].length == 0) {
-							logger.error("iiScriptService.getIIScriptQs: cant find ANY iiScripts for user %d.", decoded_token.id, qr);
+							logger.error("iiScriptService.getIIScriptQs: cant find ANY iiScripts for user %d.", decoded_token.u_id, qr);
 							callback( contracts.Bad_UserID );
 						}
 						else {
@@ -67,13 +67,13 @@ exports.getIIScriptQs = function(user_sent_token, callback){
 
 
 exports.deleteIIScriptQ = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			callback(error);
 		}
 		else {
 			db.query("CALL deleteIIScriptQ(?,?)", 
-				[decoded_token.id, req_body.q_id],
+				[decoded_token.u_id, req_body.q_id],
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.deleteIIScriptQ: deleteIIScriptQ(sql): ", err);
@@ -81,7 +81,7 @@ exports.deleteIIScriptQ = function(user_sent_token, req_body, callback){
 					}
 					else {
 						if (qr.affectedRows < 1) {
-							logger.warn("iiScriptService.deleteIIScriptQ: user %d cannot delete iiScript Question %d", decoded_token.id, req_body.q_id);
+							logger.warn("iiScriptService.deleteIIScriptQ: user %d cannot delete iiScript Question %d", decoded_token.u_id, req_body.q_id);
 							callback(contracts.DeleteQ_Failure);
 						}
 						else {
@@ -96,13 +96,13 @@ exports.deleteIIScriptQ = function(user_sent_token, req_body, callback){
 
 
 exports.createIIScriptQ = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			callback(error);
 		}
 		else {
 			db.query("CALL newIIscriptQ(?,?)", 
-				[decoded_token.id, req_body.text], 
+				[decoded_token.u_id, req_body.text], 
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.createIIScriptQ: newIIscriptQ(sql): ", err);
@@ -110,7 +110,7 @@ exports.createIIScriptQ = function(user_sent_token, req_body, callback){
 					}
 					else {
 						if (qr.affectedRows < 1) {
-							logger.warn("iiScriptService.createIIScriptQ: user %d failed to create new iiScript question", decoded_token.id);
+							logger.warn("iiScriptService.createIIScriptQ: user %d failed to create new iiScript question", decoded_token.u_id);
 							callback(contracts.NewQ_Failure);
 						}
 						else {
@@ -125,13 +125,13 @@ exports.createIIScriptQ = function(user_sent_token, req_body, callback){
 
 
 exports.deleteIIscript = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			callback(error);
 		}
 		else {
 			db.query("CALL deleteIIscript(?,?,?)", 
-				[decoded_token.id, req_body.ii_id, req_body.c_id],
+				[decoded_token.u_id, req_body.ii_id, req_body.c_id],
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.deleteIIscript: deleteIIscript(sql): ", err);
@@ -140,7 +140,7 @@ exports.deleteIIscript = function(user_sent_token, req_body, callback){
 					else {
 						if (qr.affectedRows < 1) {
 							// not your contact, or not your iiScript, or both
-							logger.warn("iiScriptService.deleteIIscript: user, u_id=%d cannot delete iiScript, ii_id=%d", decoded_token.id, req_body.ii_id);
+							logger.warn("iiScriptService.deleteIIscript: user, u_id=%d cannot delete iiScript, ii_id=%d", decoded_token.u_id, req_body.ii_id);
 							callback(contracts.DeleteIIscript_Failure);
 						}
 						else {
@@ -155,14 +155,14 @@ exports.deleteIIscript = function(user_sent_token, req_body, callback){
 
 
 exports.getContactIIScripts = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			// Any JWT error should require user to log in again.
 			callback(error);
 		}
 		else {
 			db.query("CALL getContactIIScripts(?,?)", 
-				[decoded_token.id, req_body.c_id], 
+				[decoded_token.u_id, req_body.c_id], 
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.getContactIIScripts: getContactIIScripts(sql): ", err);
@@ -185,14 +185,14 @@ exports.getContactIIScripts = function(user_sent_token, req_body, callback){
 
 
 exports.createIIscript = function(user_sent_token, req_body, callback){
-	authService.verifyToken(user_sent_token, function(error, decoded_token) {
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			// Any JWT error should require user to log in again.
 			callback(error);
 		}
 		else {
 			db.query("CALL newIIscript(?,?,?)", 
-				[decoded_token.id, req_body.c_id, req_body.text], 
+				[decoded_token.u_id, req_body.c_id, req_body.text], 
 				function(err, qr){
 					if(err) {
 						logger.error("iiScriptService.createIIscript: newIIscript(sql): ", err);
@@ -201,7 +201,7 @@ exports.createIIscript = function(user_sent_token, req_body, callback){
 					else {
 						if (qr.affectedRows < 1) {
 							// failed to create the iiScript
-							logger.warn("iiScriptService.createIIscript: user %d failed to create iiScript", decoded_token.id);
+							logger.warn("iiScriptService.createIIscript: user %d failed to create iiScript", decoded_token.u_id);
 							callback(contracts.NewIIscript_Failure);
 						}
 						/*else if (qr[0] == null) {

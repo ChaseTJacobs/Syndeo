@@ -7,6 +7,7 @@ var accountService = require('./accountService');
 var contactService = require('./contactService');
 var activityService = require('./activityService');
 var iiScriptService = require('./iiScriptService');
+var emailService = require('./emailService');
 var contracts = 		require('./contracts');
 var env = 				require('./environment');
 
@@ -14,11 +15,11 @@ var app = express();
 var jsonParser = bodyParser.json({"type":"application/json"});
 var port = env.port;
 
-logger.add(logger.transports.File, {
+/*logger.add(logger.transports.File, {
 	filename: 'combined.log',
 	handleExceptions: true,
 	humanReadableUnhandledException: true
-});
+});*/
 logger.exitOnError = false;
 
 // allow certain headers
@@ -27,7 +28,18 @@ app.use(function(req, res, next){
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
-
+/*// callback for endpoints that attach headers before sending response
+attachHeader_callback = function(err, response, token) {
+	if (err) {
+		res.send( response );
+	}
+	else {
+		res.set('Authorization', token);
+		res.set('Access-Control-Expose-Headers', 'Authorization');
+		res.send( response );
+	}
+}*/
+// handles jsonParser's responses & enforces request body contracts.
 requestBodyHandler = function(contract, req, res, callback) {
 	if (!req.body) {
 			return res.sendStatus(400);
@@ -46,7 +58,115 @@ requestBodyHandler = function(contract, req, res, callback) {
 	}
 }
 
+/* ~~~ Here Be Endpoints ~~~ */
 
+// Email Endpoints
+app.post('/emailToken', jsonParser, function(req, res) {
+	logger.info("hit \'emailToken\'");
+	requestBodyHandler(contracts.emailToken, req, res, 
+		function (req, res) {
+			emailService.emailToken( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+		});
+});
+app.post('/confirmEmail', jsonParser, function(req, res) {
+	logger.info("hit \'confirmEmail\'");
+	requestBodyHandler(contracts.confirmEmail, req, res, 
+		function (req, res) {
+			emailService.confirmEmail(req.get('Authorization'), req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+		});
+});
+
+// Account Endpoints
+app.post('/updateForgotPass', jsonParser, function(req, res) {
+	logger.info("hit \'updateForgotPass\'");
+	requestBodyHandler(contracts.updateForgotPass, req, res, 
+		function (req, res) {
+			accountService.updateForgotPass(req.get('Authorization'), req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+		});
+});
+app.post('/changePassword', jsonParser, function(req, res) {
+	logger.info("hit \'changePassword\'");
+	requestBodyHandler(contracts.changePassword, req, res, 
+		function (req, res) {
+			accountService.changePassword(req.get('Authorization'), req.body, (response) => res.send(response));
+		});
+});
+/*
+app.post('/confirmEmail', jsonParser, function(req, res) {
+	logger.info("hit \'confirmEmail\'");
+	requestBodyHandler(contracts.confirmEmail, req, res, 
+		function (req, res) {
+			accountService.confirmEmail( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+		});
+});
+app.post('/forgotPassword', jsonParser, function (req, res) {
+	logger.info("hit \'forgotPassword\'");
+	requestBodyHandler(contracts.forgotPassword, req, res, 
+		function (req, res) {
+			accountService.forgotPassword( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+		});
+});
+app.post('/updatePassword', jsonParser, function (req, res) {
+	logger.info("hit \'updatePassword\'");
+	requestBodyHandler(contracts.updatePassword, req, res, 
+		function (req, res) {
+			accountService.updatePassword( req.body, function(err, response, token) {
+				if (err) {
+					res.send( response );
+				}
+				else {
+					res.set('Authorization', token);
+					res.set('Access-Control-Expose-Headers', 'Authorization');
+					res.send( response );
+				}
+			});
+});
+*/
 app.post('/login', jsonParser, function(req, res) {
 	logger.info("hit \'login\'");
 	requestBodyHandler(contracts.login, req, res, 
@@ -63,12 +183,12 @@ app.post('/login', jsonParser, function(req, res) {
 			});
 		});
 });
-
 app.post('/createAccount', jsonParser, function (req, res) {
+	// TODO: implement createAccount_DEV (no JWT auth)
 	logger.info("hit \'createAccount\'");
 	requestBodyHandler(contracts.createAccount, req, res, 
 		function (req, res) {
-			accountService.createAccount( req.body, function(err, response, token) {
+			accountService.createAccount(req.get('Authorization'), req.body, function(err, response, token) {
 				if (err) {
 					res.send( response );
 				}
@@ -80,7 +200,6 @@ app.post('/createAccount', jsonParser, function (req, res) {
 			});
 		});
 });
-
 app.get('/getUserInfo', jsonParser, function (req, res) {
 	logger.info("hit \'getUserInfo\'");
 	requestBodyHandler(contracts.getUserInfo, req, res, 
@@ -88,7 +207,6 @@ app.get('/getUserInfo', jsonParser, function (req, res) {
 			accountService.getUserInfo(req.get('Authorization'), (response) => res.send(response))
 		});
 });
-
 app.post('/updateUserInfo', jsonParser, function (req, res) {
 	logger.info("hit \'updateUserInfo\'");
 	requestBodyHandler(contracts.updateUserInfo, req, res, 
@@ -96,15 +214,6 @@ app.post('/updateUserInfo', jsonParser, function (req, res) {
 			accountService.updateUserInfo(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
-// app.post('/forgotPassword', jsonParser, function (req, res) {
-	// logger.info("hit \'forgotPassword\'");
-	// requestBodyHandler(contracts.forgotPassword, req, res, 
-		// function (req, res) {
-			// accountService.forgotPassword( req.body, (response) => res.send(response))
-		// });
-// });
-
 app.post('/updateGlobalCounters', jsonParser, function (req, res) {
 	logger.info("hit \'updateGlobalCounters\'");
 	requestBodyHandler(contracts.updateGlobalCounters, req, res, 
@@ -112,7 +221,6 @@ app.post('/updateGlobalCounters', jsonParser, function (req, res) {
 			accountService.updateGlobalCounters(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.get('/getAllCounters', jsonParser, function (req, res) {
 	logger.info("hit \'getAllCounters\'");
 	requestBodyHandler(contracts.getAllCounters, req, res, 
@@ -121,7 +229,7 @@ app.get('/getAllCounters', jsonParser, function (req, res) {
 		});
 });
 
-
+// Contact Endpoints
 app.post('/createContact', jsonParser, function (req, res) {
 	logger.info("hit \'createContact\'");
 	requestBodyHandler(contracts.createContact, req, res, 
@@ -129,7 +237,6 @@ app.post('/createContact', jsonParser, function (req, res) {
 			contactService.createContact(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/deleteContact', jsonParser, function (req, res) {
 	logger.info("hit \'deleteContact\'");
 	requestBodyHandler(contracts.deleteContact, req, res, 
@@ -137,7 +244,6 @@ app.post('/deleteContact', jsonParser, function (req, res) {
 			contactService.deleteContact(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.get('/getContactList', jsonParser, function (req, res) {
 	logger.info("hit \'getContactList\'");
 	requestBodyHandler(contracts.getContactList, req, res, 
@@ -145,7 +251,6 @@ app.get('/getContactList', jsonParser, function (req, res) {
 			contactService.getContactList(req.get('Authorization'), (response) => res.send(response))
 		});
 });
-
 app.post('/getContactInfo', jsonParser, function (req, res) {
 	logger.info("hit \'getContactInfo\'");
 	requestBodyHandler(contracts.getContactInfo, req, res, 
@@ -153,7 +258,6 @@ app.post('/getContactInfo', jsonParser, function (req, res) {
 			contactService.getContactInfo(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/updateContactInfo', jsonParser, function (req, res) {
 	logger.info("hit \'updateContactInfo\'");
 	requestBodyHandler(contracts.updateContactInfo, req, res, 
@@ -161,7 +265,6 @@ app.post('/updateContactInfo', jsonParser, function (req, res) {
 			contactService.updateContactInfo(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/updateContactStats', jsonParser, function (req, res) {
 	logger.info("hit \'updateContactStats\'");
 	requestBodyHandler(contracts.updateContactStats, req, res, 
@@ -170,7 +273,7 @@ app.post('/updateContactStats', jsonParser, function (req, res) {
 		});
 });
 
-
+// Activity Endpoints
 app.get('/getActivityTypes', jsonParser, function (req, res) {
 	logger.info("hit \'getActivityTypes\'");
 	requestBodyHandler(contracts.getActivityTypes, req, res, 
@@ -178,7 +281,6 @@ app.get('/getActivityTypes', jsonParser, function (req, res) {
 			activityService.getActivityTypes(req.get('Authorization'), (response) => res.send(response))
 		});
 });
-
 app.post('/createActivity', jsonParser, function (req, res) {
 	logger.info("hit \'createActivity\'");
 	requestBodyHandler(contracts.createActivity, req, res, 
@@ -186,7 +288,6 @@ app.post('/createActivity', jsonParser, function (req, res) {
 			activityService.createActivity(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/deleteActivity', jsonParser, function (req, res) {
 	logger.info("hit \'deleteActivity\'");
 	requestBodyHandler(contracts.deleteActivity, req, res, 
@@ -194,7 +295,6 @@ app.post('/deleteActivity', jsonParser, function (req, res) {
 			activityService.deleteActivity(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.get('/getActivityList', jsonParser, function (req, res) {
 	logger.info("hit \'getActivityList\'");
 	requestBodyHandler(contracts.getActivityList, req, res, 
@@ -202,7 +302,6 @@ app.get('/getActivityList', jsonParser, function (req, res) {
 			activityService.getActivityList(req.get('Authorization'), (response) => res.send(response))
 		});
 });
-
 app.post('/getContactActivities', jsonParser, function (req, res) {
 	logger.info("hit \'getContactActivities\'");
 	requestBodyHandler(contracts.getContactActivities, req, res, 
@@ -210,7 +309,6 @@ app.post('/getContactActivities', jsonParser, function (req, res) {
 			activityService.getContactActivities(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/updateActivity', jsonParser, function (req, res) {
 	logger.info("hit \'updateActivity\'");
 	requestBodyHandler(contracts.updateActivity, req, res, 
@@ -219,7 +317,7 @@ app.post('/updateActivity', jsonParser, function (req, res) {
 		});
 });
 
-
+// Informational Interview Endpoints
 app.get('/getIIScriptQs', jsonParser, function (req, res) {
 	logger.info("hit \'getIIScriptQs\'");
 	requestBodyHandler(contracts.getIIScriptQs, req, res, 
@@ -227,7 +325,6 @@ app.get('/getIIScriptQs', jsonParser, function (req, res) {
 			iiScriptService.getIIScriptQs(req.get('Authorization'), (response) => res.send(response))
 		});
 });
-
 app.post('/createIIScriptQ', jsonParser, function (req, res) {
 	logger.info("hit \'createIIScriptQ\'");
 	requestBodyHandler(contracts.createIIScriptQ, req, res, 
@@ -235,7 +332,6 @@ app.post('/createIIScriptQ', jsonParser, function (req, res) {
 			iiScriptService.createIIScriptQ(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/deleteIIScriptQ', jsonParser, function (req, res) {
 	logger.info("hit \'deleteIIScriptQ\'");
 	requestBodyHandler(contracts.deleteIIScriptQ, req, res, 
@@ -243,7 +339,6 @@ app.post('/deleteIIScriptQ', jsonParser, function (req, res) {
 			iiScriptService.deleteIIScriptQ(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/updateIIscript', jsonParser, function (req, res) {
 	logger.info("hit \'updateIIscript\'");
 	requestBodyHandler(contracts.updateIIscript, req, res, 
@@ -251,7 +346,6 @@ app.post('/updateIIscript', jsonParser, function (req, res) {
 			iiScriptService.updateIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/getContactIIScripts', jsonParser, function (req, res) {
 	logger.info("hit \'getContactIIScripts\'");
 	requestBodyHandler(contracts.getContactIIScripts, req, res, 
@@ -259,7 +353,6 @@ app.post('/getContactIIScripts', jsonParser, function (req, res) {
 			iiScriptService.getContactIIScripts(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/createIIscript', jsonParser, function (req, res) {
 	logger.info("hit \'createIIscript\'");
 	requestBodyHandler(contracts.createIIscript, req, res, 
@@ -267,7 +360,6 @@ app.post('/createIIscript', jsonParser, function (req, res) {
 			iiScriptService.createIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
-
 app.post('/deleteIIscript', jsonParser, function (req, res) {
 	logger.info("hit \'deleteIIscript\'");
 	requestBodyHandler(contracts.deleteIIscript, req, res, 
@@ -282,7 +374,7 @@ app.use(express.static(path.join(__dirname, env.path_to_dist)));
 
 // endpoint for static stuff.
 app.get('*', (req, res) => {
-	logger.info("hit \'$s\'", req.originalUrl);
+	logger.info("hit \'%s\'", req.originalUrl);
 	res.sendFile(path.join(__dirname, env.path_to_dist+'/index.html'));
 });
 

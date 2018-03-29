@@ -1,6 +1,51 @@
 USE syndeo_db;
 select '...procedure definitions...' AS '';
 
+
+select '...procedure create - createEmailToken' AS '';
+DROP PROCEDURE IF EXISTS createEmailToken;
+DELIMITER //
+CREATE PROCEDURE createEmailToken(IN email_addr VARCHAR(128), email_token VARCHAR(64))
+BEGIN
+	-- Overwrites any previous tokens for this user.
+   INSERT INTO email_confirmation_tokens(email, token) VALUES(email_addr, email_token) 
+		ON DUPLICATE KEY UPDATE token = email_token;
+END //
+DELIMITER ;
+
+select '...procedure create - validateEmailToken' AS '';
+DROP PROCEDURE IF EXISTS validateEmailToken;
+DELIMITER //
+CREATE PROCEDURE validateEmailToken(IN email_addr VARCHAR(128), user_token VARCHAR(64))
+BEGIN
+	IF user_token = (SELECT token FROM email_confirmation_tokens WHERE email_addr = email_confirmation_tokens.email)
+	THEN -- success
+		DELETE FROM email_confirmation_tokens WHERE email_confirmation_tokens.email = email_addr;
+	END IF;
+END //
+DELIMITER ;
+
+select '...procedure create - updateForgotPassword' AS '';
+DROP PROCEDURE IF EXISTS updateForgotPassword;
+DELIMITER //
+CREATE PROCEDURE updateForgotPassword(IN email_addr VARCHAR(128), new_pass VARCHAR(64))
+BEGIN
+   UPDATE users SET password = new_pass WHERE users.email = email_addr;
+	SELECT * FROM users WHERE users.email = email_addr;
+END //
+DELIMITER ;
+
+select '...procedure create - changePassword' AS '';
+DROP PROCEDURE IF EXISTS changePassword;
+DELIMITER //
+CREATE PROCEDURE changePassword(IN user_id INT UNSIGNED, old_pass VARCHAR(64), new_pass VARCHAR(64))
+BEGIN
+	-- TODO: compare old passwords, then update or not.
+   UPDATE users SET password = new_pass WHERE users.u_id = user_id and users.password = old_pass;
+	-- SELECT * FROM users WHERE users.u_id = user_id AND users.password = pass;
+END //
+DELIMITER ;
+
 select '...procedure create - isUserInDatabase' AS '';
 DROP PROCEDURE IF EXISTS isUserInDatabase;
 DELIMITER //
@@ -230,16 +275,17 @@ CREATE PROCEDURE newActivity(IN	user_id INT UNSIGNED,
 											act_name VARCHAR(128),
 											act_date BIGINT UNSIGNED,
 											act_notes VARCHAR(4096),
-											act_completed INT UNSIGNED)
+											act_completed INT UNSIGNED,
+											loc VARCHAR(128))
 BEGIN
 	IF contact_id IS NOT NULL 
 	and user_id = (SELECT u_id FROM contacts WHERE contact_id = contacts.c_id)
 	THEN
-		INSERT INTO activities(u_id, c_id, atype_id, activity_name, event_date, notes, completed)
-		VALUES(user_id, contact_id, act_type, act_name, act_date, act_notes, act_completed);
+		INSERT INTO activities(u_id, c_id, atype_id, activity_name, event_date, notes, completed, location)
+		VALUES(user_id, contact_id, act_type, act_name, act_date, act_notes, act_completed, loc);
 	ELSE
-		INSERT INTO activities(u_id, atype_id, activity_name, event_date, notes, completed)
-		VALUES(user_id, act_type, act_name, act_date, act_notes, act_completed);
+		INSERT INTO activities(u_id, atype_id, activity_name, event_date, notes, completed, location)
+		VALUES(user_id, act_type, act_name, act_date, act_notes, act_completed, loc);
 	END IF;
 END //
 DELIMITER ;
@@ -255,7 +301,8 @@ CREATE PROCEDURE updateActivity(IN	user_id INT UNSIGNED,
 												act_name VARCHAR(128),
 												act_date BIGINT UNSIGNED,
 												act_notes VARCHAR(4096),
-												act_completed INT UNSIGNED)
+												act_completed INT UNSIGNED,
+												loc VARCHAR(128))
 BEGIN
 	IF act_type IS NOT NULL THEN
 		UPDATE activities SET atype_id = act_type
@@ -275,6 +322,10 @@ BEGIN
 	END IF;
 	IF act_completed IS NOT NULL THEN
 		UPDATE activities SET completed = act_completed
+		WHERE user_id = activities.u_id and activities.a_id = act_id;
+	END IF;
+	IF loc IS NOT NULL THEN
+		UPDATE activities SET location = loc
 		WHERE user_id = activities.u_id and activities.a_id = act_id;
 	END IF;
 END //

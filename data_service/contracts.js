@@ -52,18 +52,34 @@ exports.enforce = function(req, contract, callback){
 }
 
 
-exports.login = {
+exports.emailToken = {
+	'email':{
+		'required':true,
+		'type':"string"
+	}
+};
+exports.confirmEmail = {
 	'email':{
 		'required':true,
 		'type':"string"
 	},
-	'password':{
+	'token':{
 		'required':true,
-		'type':"string"		
+		'type':"string"
+	}
+};
+exports.updateForgotPass = {
+	'email':{ /* identifier */
+		'required':true,
+		'type':"string"
+	},
+	'new_password':{
+		'required':true,
+		'type':"string"
 	}
 };
 exports.createAccount = {
-	'email':{
+	'email':{ /* identifier */
 		'required':true,
 		'type':"string"
 	},
@@ -80,13 +96,44 @@ exports.createAccount = {
 		'type':"string"	
 	}
 };
-exports.forgotPassword = {
+exports.login = {
+	'email':{ /* identifier */
+		'required':true,
+		'type':"string"
+	},
+	'password':{ /* identifier */
+		'required':true,
+		'type':"string"		
+	}
+};
+/*exports.forgotPassword = {
 	'email':{
 		'required':true,
 		'type':"string"
 	}
 };
+exports.updatePassword = {
+	// no need for email.
+	'token':{
+		'required':true,
+		'type':"string"
+	},
+	'new_password':{
+		'required':true,
+		'type':"string"
+	}
+};*/
 exports.getUserInfo = {}
+exports.changePassword = {
+	'old_password':{
+		'required':true,
+		'type':"string"
+	},
+	'new_password':{
+		'required':true,
+		'type':"string"
+	}
+};
 exports.updateUserInfo = {
 	'user_info':{
 		'required':true,
@@ -247,6 +294,10 @@ exports.createActivity = {
 	'completed':{
 		'required':false,
 		'type':5 // 0/1 = t/f
+	},
+	'location':{
+		'required':false,
+		'type':"string"
 	}
 }
 exports.getContactActivities = {
@@ -281,7 +332,11 @@ exports.updateActivity = {
 	},
 	'completed':{
 		'required':false,
-		'type':true
+		'type':5
+	},
+	'location':{
+		'required':false,
+		'type':"string"
 	}
 }
 exports.createIIscript = {
@@ -355,7 +410,7 @@ exports.updateMyModules = {
 	},
 	'completed':{
 		'required':false,
-		'type':true
+		'type':5
 	},
 	'in_progress':{
 		'required':false,
@@ -443,3 +498,15 @@ exports.UpdateGcounters_Success = { 'data':"Success. global counters updated", '
 exports.GetAllCounters_Success = 136;
 // more Activities
 exports.GetActType_Success = 137;
+// more Account
+exports.ForgotPass_BadEmailAddr = { 'data':"Failure. No account attached to that email address", 'status':223 };
+exports.UpdatePass_Success = 138;
+exports.UpdatePass_Failure = { 'data':"Failure. Token Mismatch", 'status':224 };
+// Email 
+exports.TokenSent = { 'data':"Success. Token Emailed.", 'status':139 };
+exports.EmailConfirm_Failure = { 'data':"Failure. Invalid Token for given Email Address.", 'status':225 };
+exports.EmailConfirmed = { 'data':"Success. Email Confirmed!", 'status':140 };
+exports.EmailSwap_Error = { 'data':"Error. Given Email != Tokened Email.", 'status':226 };
+// Account...
+exports.ChangePass_Failure = { 'data':"Failure. Could not change password.", 'status':227 };
+exports.ChangePass_Success = { 'data':"Success. Password Changed. You will be notified by email.", 'status':141 };
