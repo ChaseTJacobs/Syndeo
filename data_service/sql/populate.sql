@@ -23,6 +23,12 @@ CALL addUser("nathanulmer@gmail.com", "asdf", "{\"firstname\":\"Nathan\", \"last
 CALL addUser("chase@email.com", "test", "{\"quizResults\":[2,1,0,1,0,0,0,1]}");
 CALL addUser("kim@email.com", "Pass", "KIMMY DEEEEAAAAN!!!!");
 
+CALL auto_populate(1);
+CALL auto_populate(2);
+CALL auto_populate(3);
+CALL auto_populate(4);
+CALL auto_populate(5);
+
 CALL newContact(1, "Zoe Barton", "Zoe", "Barton", "Walmart", "Recruiter", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 CALL newContact(1, "Bill Smarterman", "Bill", "Smarterman", "Walmart", "Developer", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 CALL newContact(1, "Mr. J J", "Mr. J", "J", "Walmart", "Bossman", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
