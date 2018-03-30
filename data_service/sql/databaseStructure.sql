@@ -17,15 +17,15 @@ DROP TABLE IF EXISTS email_confirmation_tokens;
 
 CREATE TABLE IF NOT EXISTS users(
 	u_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	email VARCHAR(128) NOT NULL, 
-	password VARCHAR(256) NOT NULL,
-	user_info VARCHAR(16384),
+	email VARCHAR(128) NOT NULL, -- Sensitive
+	password VARCHAR(256) NOT NULL, -- Sensitive
+	user_info VARCHAR(16384), -- Sensitive
 	email_response INT UNSIGNED DEFAULT 0,
 	resume_request INT UNSIGNED DEFAULT 0,
 	msg_or_call_from INT UNSIGNED DEFAULT 0,
 	created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	stripe_token VARCHAR(1024),
+	stripe_token VARCHAR(1024), -- Sensitive
 	CONSTRAINT user_email_unique UNIQUE(email)
 );
 CREATE TABLE IF NOT EXISTS modules(
@@ -61,16 +61,16 @@ CREATE TABLE IF NOT EXISTS contacts(
 	c_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	u_id INT UNSIGNED NOT NULL,
 	fullname VARCHAR(256) NOT NULL,
-	firstname VARCHAR(128),
-	lastname VARCHAR(128),
-	organization VARCHAR(128),
-	position VARCHAR(256),
-	email VARCHAR(128),
-	phone VARCHAR(64),
-	url_linkedin VARCHAR(256),
-	mail_address VARCHAR(128),
+	firstname VARCHAR(128), -- Sensitive
+	lastname VARCHAR(128), -- Sensitive
+	organization VARCHAR(128), -- Sensitive
+	position VARCHAR(256), -- Sensitive
+	email VARCHAR(128), -- Sensitive
+	phone VARCHAR(64), -- Sensitive
+	url_linkedin VARCHAR(256), -- Sensitive
+	mail_address VARCHAR(128), -- Sensitive
 	notes VARCHAR(16384),
-	other_info VARCHAR(16384),
+	other_info VARCHAR(16384), -- Sensitive
 	created_milli BIGINT UNSIGNED,
 	email_response INT UNSIGNED DEFAULT 0,
 	resume_request INT UNSIGNED DEFAULT 0,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS user_iiscript_Qs(
 	CONSTRAINT user_userIIscriptQ_relationship FOREIGN KEY(u_id) REFERENCES users(u_id)
 );
 CREATE TABLE IF NOT EXISTS email_confirmation_tokens(
-	email VARCHAR(128) NOT NULL PRIMARY KEY,
+	email VARCHAR(128) NOT NULL PRIMARY KEY, -- Sensitive
 	token VARCHAR(64) NOT NULL,
 	created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT user_email_unique UNIQUE(email)

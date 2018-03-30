@@ -92,7 +92,7 @@ exports.createAccount = {
 		'type':{'object':"object"}		
 	},
 	'stripe_token':{
-		'required':false,
+		'required':true,
 		'type':"string"	
 	}
 };

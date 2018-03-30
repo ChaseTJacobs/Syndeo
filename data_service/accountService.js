@@ -2,6 +2,7 @@ var db = require("./dbService");
 var env = 	require('./environment');
 var authService = 	require('./authService');
 var emailService = 	require('./emailService');
+var paymentService = 	require('./paymentService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
 
@@ -37,7 +38,6 @@ exports.changePassword = function(user_sent_token, reqBody, callback){
 }
 
 
-// TODO: implement createAccount_DEV ?
 exports.createAccount = function(user_sent_token, reqBody, callback){
 	var userInfo = JSON.stringify(reqBody.user_info);
 	authService.verifyJWT(env.trust_level_RESTRICTED, user_sent_token, function(err, decoded) {
@@ -61,28 +61,35 @@ exports.createAccount = function(user_sent_token, reqBody, callback){
 						callback(true, contracts.Username_Taken, null);
 					}
 					else {
-						db.query("Call addUser(?,?,?)", [reqBody.email, reqBody.password, userInfo]/*stripe_token???*/, function (err2, qr2) {
-							if(err2) {
-								logger.error("accountService.createAccount: addUser: ", err2);
-								callback(true, contracts.DB_Access_Error, null);
+						paymentService.make_oneTime_payment(reqBody.email, reqBody.stripe_token, function(pay_err, charge){
+							if (pay_err) {
+								callback(true, "Stripe Payment Error: "+JSON.stringify(pay_err), null);
 							}
 							else {
-								// logger.info("accountService.createAccount: addUser: query result = ", qr2);
-								if (qr2.affectedRows < 1) {
-									logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email);
-									callback(true, contracts.Username_Taken, null);
-								}
-								else {
-									authService.generateJWT(env.trust_level_FULL, {'email':qr2[0][0].email, 'u_id':qr2[0][0].u_id}, function(err3, jwtoken) {
-										if (err3) {
-											callback(true, err3, null);
+								db.query("Call addUser(?,?,?)", [reqBody.email, reqBody.password, userInfo]/*stripe_token???*/, function (err2, qr2) {
+									if(err2) {
+										logger.error("accountService.createAccount: addUser: ", err2);
+										callback(true, contracts.DB_Access_Error, null);
+									}
+									else {
+										// logger.info("accountService.createAccount: addUser: query result = ", qr2);
+										if (qr2.affectedRows < 1) {
+											logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email);
+											callback(true, contracts.Username_Taken, null);
 										}
 										else {
-											logger.info("accountService.createAccount: created account for %s", reqBody.email);
-											callback(false, {'data':qr2[0][0].user_info, 'status':contracts.NewAcct_Success}, jwtoken);
+											authService.generateJWT(env.trust_level_FULL, {'email':qr2[0][0].email, 'u_id':qr2[0][0].u_id}, function(err3, jwtoken) {
+												if (err3) {
+													callback(true, err3, null);
+												}
+												else {
+													logger.info("accountService.createAccount: created account for %s", reqBody.email);
+													callback(false, {'data':qr2[0][0].user_info, 'status':contracts.NewAcct_Success}, jwtoken);
+												}
+											});								
 										}
-									});								
-								}
+									}
+								});
 							}
 						});
 					}
@@ -90,49 +97,6 @@ exports.createAccount = function(user_sent_token, reqBody, callback){
 			});
 		}
 	});
-	/*
-	authService.verifyJWT(env., user_sent_token, function(error, decoded_token) {
-		if (error) {
-			callback(error);
-		}
-		else if (decoded_token.email === reqBody.email) {
-			db.query("CALL isUserInDatabase(?)", 
-				[reqBody.email], 
-				function(err, qr){
-					if(err) {
-						logger.error("accountService.createAccount: isUserInDatabase(sql): ", err);
-						callback(true, contracts.DB_Access_Error, null);
-					}
-					else {
-						if (qr[0].length > 0) {
-							logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email);
-							callback(true, contracts.Username_Taken, null);
-						}
-						else {
-							db.query("Call addUser(?,?,?)",
-										[reqBody.email, reqBody.password, userInfo], // stripe_token???
-										function (error, qr1) {
-											if(error) {
-												logger.error("accountService.createAccount: addUser: ", error);
-												callback(true, contracts.DB_Access_Error, null);
-											}
-											else { 
-												authService.generate_AuthorizedAccess_Token(qr1[0]["email"], qr1[0]["u_id"], function(err, token) {
-													if (err) {
-														callback(true, err, null);
-													}
-													else {
-														logger.info("accountService.createAccount: created account for %s", reqBody.email);
-														callback(false, {'data':qr1[0]["user_info"], 'status':contracts.NewAcct_Success}, token);
-													}
-												});								
-											}
-										});
-						}
-					}
-				});
-		}
-	});*/
 }
 
 

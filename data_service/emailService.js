@@ -59,6 +59,7 @@ exports.emailToken = function(reqBody, callback){
 			callback(true, err1, null);
 		}
 		else {
+			// TODO: check if email is already in use?
 			db.query("CALL createEmailToken(?,?)", [candidate.email, candidate.token], function(err2, qr2){
 				if (err2) {
 					logger.error("emailService.emailToken: createEmailToken(sql): ", err2);
