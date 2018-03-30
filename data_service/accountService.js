@@ -85,6 +85,16 @@ exports.createAccount = function(user_sent_token, reqBody, callback){
 												else {
 													logger.info("accountService.createAccount: created account for %s", reqBody.email);
 													callback(false, {'data':qr2[0][0].user_info, 'status':contracts.NewAcct_Success}, jwtoken);
+													
+													// NOW, do some auto-population of some fields
+													db.query("Call auto_populate(?)", [qr2[0][0].u_id], function (err4, qr4) {
+														if(err4) {
+															logger.error("accountService.createAccount: auto_populate(sql): ", err4);
+														}
+														else {
+															logger.info("accountService.createAccount: successfully auto-populated %d rows for user %d", qr4.affectedRows, qr2[0][0].u_id);
+														}
+													});
 												}
 											});								
 										}

@@ -446,3 +446,84 @@ BEGIN
 END //
 DELIMITER ;
 
+
+select '...procedure create - getModuleList' AS '';
+DROP PROCEDURE IF EXISTS getModuleList;
+DELIMITER //
+CREATE PROCEDURE getModuleList(IN user_id INT UNSIGNED)
+BEGIN
+	-- only if the user_id exists
+	IF user_id = (SELECT u_id FROM users WHERE users.u_id = user_id) THEN
+		SELECT * FROM user_module_status INNER JOIN modules 
+			ON user_module_status.m_id = modules.mod_id;
+		-- SELECT mod_id, module_name, module_number, module_description FROM modules;
+	END IF;
+	-- SELECT * FROM user_module_status WHERE user_module_status.u_id = user_id;
+END //
+DELIMITER ;
+
+
+select '...procedure create - getModuleContent' AS '';
+DROP PROCEDURE IF EXISTS getModuleContent;
+DELIMITER //
+CREATE PROCEDURE getModuleContent(IN user_id INT UNSIGNED, module_id INT UNSIGNED)
+BEGIN
+	-- only if the user_id exists
+	IF user_id = (SELECT u_id FROM users WHERE users.u_id = user_id) THEN
+		SELECT mod_id, module_name, module_number, module_description, module_content FROM modules WHERE modules.mod_id = module_id;
+	END IF;
+END //
+DELIMITER ;
+
+
+-- select '...procedure create - getUserModuleStatus' AS '';
+-- DROP PROCEDURE IF EXISTS getUserModuleStatus;
+-- DELIMITER //
+-- CREATE PROCEDURE getUserModuleStatus(IN user_id INT UNSIGNED)
+-- BEGIN
+	-- SELECT * FROM user_module_status WHERE user_module_status.u_id = user_id;
+-- END //
+-- DELIMITER ;
+
+
+select '...procedure create - updateUserModuleStatus' AS '';
+DROP PROCEDURE IF EXISTS updateUserModuleStatus;
+DELIMITER //
+CREATE PROCEDURE updateUserModuleStatus(IN user_id INT UNSIGNED, 
+														 module_id INT UNSIGNED, 
+														 intr INT UNSIGNED, 
+														 compl INT UNSIGNED, 
+														 inprog INT UNSIGNED)
+BEGIN
+	IF intr IS NOT NULL THEN
+		UPDATE user_module_status SET user_module_status.interested = intr
+		WHERE user_module_status.u_id = user_id and user_module_status.m_id = module_id;
+	END IF;
+	IF compl IS NOT NULL THEN
+		UPDATE user_module_status SET user_module_status.completed = compl
+		WHERE user_module_status.u_id = user_id and user_module_status.m_id = module_id;
+	END IF;
+	IF inprog IS NOT NULL THEN
+		UPDATE user_module_status SET user_module_status.in_progress = inprog
+		WHERE user_module_status.u_id = user_id and user_module_status.m_id = module_id;
+	END IF;
+END //
+DELIMITER ;
+
+
+select '...procedure create - auto_populate' AS '';
+DROP PROCEDURE IF EXISTS auto_populate;
+DELIMITER //
+CREATE PROCEDURE auto_populate(IN user_id INT UNSIGNED)
+BEGIN
+	INSERT INTO user_module_status(u_id, m_id) VALUES(user_id, 1);
+	INSERT INTO user_module_status(u_id, m_id) VALUES(user_id, 2);
+	INSERT INTO user_module_status(u_id, m_id) VALUES(user_id, 3);
+
+	-- add a default/welcom iiScript??
+END //
+DELIMITER ;
+
+
+
+

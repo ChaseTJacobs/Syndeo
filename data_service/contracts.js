@@ -406,7 +406,7 @@ exports.updateMyModules = {
 	},
 	'interested':{
 		'required':false,
-		'type':true
+		'type':5
 	},
 	'completed':{
 		'required':false,
@@ -414,7 +414,7 @@ exports.updateMyModules = {
 	},
 	'in_progress':{
 		'required':false,
-		'type':true
+		'type':5
 	}
 }
 exports.getAllCounters = {}
@@ -510,3 +510,9 @@ exports.EmailSwap_Error = { 'data':"Error. Given Email != Tokened Email.", 'stat
 // Account...
 exports.ChangePass_Failure = { 'data':"Failure. Could not change password.", 'status':227 };
 exports.ChangePass_Success = { 'data':"Success. Password Changed. You will be notified by email.", 'status':141 };
+// Modules
+exports.GetModList_Success = 142;
+exports.GetContent_Success = 143;
+exports.Bad_ModID = { 'data':"Failure. Bad value mod_id.", 'status':228 };
+exports.UpdateModStatus_Success = {'data':"Success. Module Status Updated.", 'status':144};
+exports.UpdateModStatus_Failure = {'data':"Failure. Could not Update Module Status.", 'status':229};

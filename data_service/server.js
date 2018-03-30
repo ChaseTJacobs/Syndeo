@@ -3,11 +3,12 @@ var bodyParser = 		require('body-parser');
 var path = 				require('path'); // for serving static content
 var logger = 			require('winston');
 var authService = 	require('./authService');
+var emailService = require('./emailService');
 var accountService = require('./accountService');
 var contactService = require('./contactService');
 var activityService = require('./activityService');
 var iiScriptService = require('./iiScriptService');
-var emailService = require('./emailService');
+var moduleService = require('./moduleService');
 var contracts = 		require('./contracts');
 var env = 				require('./environment');
 
@@ -365,6 +366,29 @@ app.post('/deleteIIscript', jsonParser, function (req, res) {
 	requestBodyHandler(contracts.deleteIIscript, req, res, 
 		function (req, res) {
 			iiScriptService.deleteIIscript(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+
+// Module-related Endpoints
+app.get('/getModuleList', jsonParser, function (req, res) {
+	logger.info("hit \'getModuleList\'");
+	requestBodyHandler(contracts.getModuleList, req, res, 
+		function (req, res) {
+			moduleService.getModuleList(req.get('Authorization'), (response) => res.send(response))
+		});
+});
+app.post('/getModuleContent', jsonParser, function (req, res) {
+	logger.info("hit \'getModuleContent\'");
+	requestBodyHandler(contracts.getModuleContent, req, res, 
+		function (req, res) {
+			moduleService.getModuleContent(req.get('Authorization'), req.body, (response) => res.send(response))
+		});
+});
+app.post('/updateMyModules', jsonParser, function (req, res) {
+	logger.info("hit \'updateMyModules\'");
+	requestBodyHandler(contracts.updateMyModules, req, res, 
+		function (req, res) {
+			moduleService.updateMyModules(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
 
