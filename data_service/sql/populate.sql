@@ -12,11 +12,11 @@ INSERT INTO std_iiscript_Qs(text) VALUES("Have you ever murdered someone?");
 INSERT INTO std_iiscript_Qs(text) VALUES("How many people have you murdered?");
 INSERT INTO std_iiscript_Qs(text) VALUES("Will you please not murder me?");
 
-INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Non-Badly", 1, "Lorem Ipsum Doodle Diddle Dee.");
-INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Okayly", 2, "Lorem Ipsum Doodle Diddle Dee.");
-INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Goodly", 3, "Lorem Ipsum Doodle Diddle Dee.");
-INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Betterly", 4, "Lorem Ipsum Doodle Diddle Dee.");
-INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Bestly", 5, "Lorem Ipsum Doodle Diddle Dee.");
+-- INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Non-Badly", 1, "Lorem Ipsum Doodle Diddle Dee.");
+-- INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Okayly", 2, "Lorem Ipsum Doodle Diddle Dee.");
+-- INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Goodly", 3, "Lorem Ipsum Doodle Diddle Dee.");
+-- INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Betterly", 4, "Lorem Ipsum Doodle Diddle Dee.");
+-- INSERT INTO modules(module_name, module_number, module_content) VALUES("Doing Things Bestly", 5, "Lorem Ipsum Doodle Diddle Dee.");
 
 -- Test User Content
 CALL addUser("nathanulmer@gmail.com", "asdf", "{\"firstname\":\"Nathan\", \"lastname\":\"Ulmer\"}");
@@ -26,8 +26,6 @@ CALL addUser("kim@email.com", "Pass", "KIMMY DEEEEAAAAN!!!!");
 CALL auto_populate(1);
 CALL auto_populate(2);
 CALL auto_populate(3);
-CALL auto_populate(4);
-CALL auto_populate(5);
 
 CALL newContact(1, "Zoe Barton", "Zoe", "Barton", "Walmart", "Recruiter", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 CALL newContact(1, "Bill Smarterman", "Bill", "Smarterman", "Walmart", "Developer", NULL, NULL, NULL, NULL, NULL, NULL, NULL);
