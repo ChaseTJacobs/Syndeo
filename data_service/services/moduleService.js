@@ -53,7 +53,7 @@ exports.getModuleContent = function(user_sent_token, req_body, callback){
 					}
 					else {
 						logger.info("moduleService.getModuleContent: success.");
-						callback( {'data': qr[0], 'status':contracts.GetContent_Success} );
+						callback( {'data': qr[0][0], 'status':contracts.GetContent_Success} );
 					}
 				}
 			});
