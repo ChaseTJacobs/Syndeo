@@ -476,14 +476,14 @@ END //
 DELIMITER ;
 
 
--- select '...procedure create - getUserModuleStatus' AS '';
--- DROP PROCEDURE IF EXISTS getUserModuleStatus;
--- DELIMITER //
--- CREATE PROCEDURE getUserModuleStatus(IN user_id INT UNSIGNED)
--- BEGIN
-	-- SELECT * FROM user_module_status WHERE user_module_status.u_id = user_id;
--- END //
--- DELIMITER ;
+select '...procedure create - getUserModuleStatus' AS '';
+DROP PROCEDURE IF EXISTS getUserModuleStatus;
+DELIMITER //
+CREATE PROCEDURE getUserModuleStatus(IN user_id INT UNSIGNED)
+BEGIN
+	SELECT * FROM user_module_status WHERE user_module_status.u_id = user_id;
+END //
+DELIMITER ;
 
 
 select '...procedure create - updateUserModuleStatus' AS '';

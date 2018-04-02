@@ -62,6 +62,33 @@ exports.getModuleContent = function(user_sent_token, req_body, callback){
 }
 
 
+exports.getUserModStatus = function(user_sent_token, callback){
+	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
+		if (error) {
+			callback(error);
+		}
+		else {
+			db.query("CALL getUserModuleStatus(?)", [decoded_token.u_id], function(err, qr){
+				if(err) {
+					logger.error("moduleService.getUserModStatus: getUserModuleStatus(sql): ", err);
+					callback(contracts.DB_Access_Error);
+				}
+				else {
+					if (qr[0].length == 0) {
+						logger.warn("moduleService.getUserModStatus: no Module data available to user %d.", decoded_token.u_id, qr);
+						callback( contracts.Bad_UserID );
+					}
+					else {
+						logger.info("moduleService.getUserModStatus: success.");
+						callback( {'data': qr[0], 'status':contracts.GetUserModStatus_Success} );
+					}
+				}
+			});
+		}
+	});
+}
+
+
 exports.getModuleList = function(user_sent_token, callback){
 	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {

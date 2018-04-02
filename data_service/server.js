@@ -328,6 +328,13 @@ app.get('/getModuleList', jsonParser, function (req, res) {
 			moduleService.getModuleList(req.get('Authorization'), (response) => res.send(response))
 		});
 });
+app.get('/getUserModStatus', jsonParser, function (req, res) {
+	logger.info("hit \'getUserModStatus\'");
+	requestBodyHandler(contracts.getUserModStatus, req, res, 
+		function (req, res) {
+			moduleService.getUserModStatus(req.get('Authorization'), (response) => res.send(response))
+		});
+});
 app.post('/getModuleContent', jsonParser, function (req, res) {
 	logger.info("hit \'getModuleContent\'");
 	requestBodyHandler(contracts.getModuleContent, req, res, 

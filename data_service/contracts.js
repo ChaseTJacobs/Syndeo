@@ -376,6 +376,7 @@ exports.deleteIIscript = {
 	}
 }
 exports.getModuleList = {}
+exports.getUserModStatus = {}
 exports.getModuleContent = {
 	'mod_id':{
 		'required':true,
@@ -499,3 +500,4 @@ exports.GetContent_Success = 143;
 exports.Bad_ModID = { 'data':"Failure. Bad value mod_id.", 'status':228 };
 exports.UpdateModStatus_Success = {'data':"Success. Module Status Updated.", 'status':144};
 exports.UpdateModStatus_Failure = {'data':"Failure. Could not Update Module Status.", 'status':229};
+exports.GetUserModStatus_Success = 145;
