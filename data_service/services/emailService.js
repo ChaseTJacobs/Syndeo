@@ -1,7 +1,7 @@
 var db = require("./dbService");
 var authService = require('./authService');
 var env = 	require('../environment');
-var contracts = require('./contracts');
+var contracts = require('../contracts');
 var logger = require('winston');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(env.sendGrid_API_key);

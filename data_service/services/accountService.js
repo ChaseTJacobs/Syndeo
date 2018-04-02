@@ -3,7 +3,7 @@ var env = 	require('../environment');
 var authService = 	require('./authService');
 var emailService = 	require('./emailService');
 var paymentService = 	require('./paymentService');
-var contracts = 		require('./contracts');
+var contracts = 		require('../contracts');
 var logger = 			require('winston');
 
 

@@ -1,8 +1,8 @@
 var db = 				require("./dbService");
 var authService = 	require('./authService');
-var contracts = 		require('./contracts');
+var contracts = 		require('../contracts');
 var logger = 			require('winston');
-var env = 	require('./environment');
+var env = 	require('../environment');
 
 
 exports.updateMyModules = function(user_sent_token, req_body, callback){
