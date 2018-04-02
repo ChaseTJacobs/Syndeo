@@ -2,7 +2,7 @@ var db = 				require("./dbService");
 var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
-var env = 	require('./environment');
+var env = 	require('../environment');
 
 exports.getActivityTypes = function(user_sent_token, callback){
 	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {

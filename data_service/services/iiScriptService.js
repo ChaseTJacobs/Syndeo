@@ -2,7 +2,7 @@ var db = 				require("./dbService");
 var authService = 	require('./authService');
 var contracts = 		require('./contracts');
 var logger = 			require('winston');
-var env = 	require('./environment');
+var env = 	require('../environment');
 
 // TODO - TEST all of these...
 

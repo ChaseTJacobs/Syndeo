@@ -1,16 +1,16 @@
-var express = 			require('express');
-var bodyParser = 		require('body-parser');
-var path = 				require('path'); // for serving static content
-var logger = 			require('winston');
-var authService = 	require('./authService');
-var emailService = require('./emailService');
-var accountService = require('./accountService');
-var contactService = require('./contactService');
-var activityService = require('./activityService');
-var iiScriptService = require('./iiScriptService');
-var moduleService = require('./moduleService');
-var contracts = 		require('./contracts');
-var env = 				require('./environment');
+var express = require('express');
+var bodyParser = require('body-parser');
+var path = require('path'); // for serving static content
+var logger = require('winston');
+var contracts = require('./contracts');
+var env = require('./environment');
+var authService = require('./services/authService');
+var emailService = require('./services/emailService');
+var accountService = require('./services/accountService');
+var contactService = require('./services/contactService');
+var activityService = require('./services/activityService');
+var iiScriptService = require('./services/iiScriptService');
+var moduleService = require('./services/moduleService');
 
 var app = express();
 var jsonParser = bodyParser.json({"type":"application/json"});
@@ -119,55 +119,6 @@ app.post('/changePassword', jsonParser, function(req, res) {
 			accountService.changePassword(req.get('Authorization'), req.body, (response) => res.send(response));
 		});
 });
-/*
-app.post('/confirmEmail', jsonParser, function(req, res) {
-	logger.info("hit \'confirmEmail\'");
-	requestBodyHandler(contracts.confirmEmail, req, res, 
-		function (req, res) {
-			accountService.confirmEmail( req.body, function(err, response, token) {
-				if (err) {
-					res.send( response );
-				}
-				else {
-					res.set('Authorization', token);
-					res.set('Access-Control-Expose-Headers', 'Authorization');
-					res.send( response );
-				}
-			});
-		});
-});
-app.post('/forgotPassword', jsonParser, function (req, res) {
-	logger.info("hit \'forgotPassword\'");
-	requestBodyHandler(contracts.forgotPassword, req, res, 
-		function (req, res) {
-			accountService.forgotPassword( req.body, function(err, response, token) {
-				if (err) {
-					res.send( response );
-				}
-				else {
-					res.set('Authorization', token);
-					res.set('Access-Control-Expose-Headers', 'Authorization');
-					res.send( response );
-				}
-			});
-		});
-});
-app.post('/updatePassword', jsonParser, function (req, res) {
-	logger.info("hit \'updatePassword\'");
-	requestBodyHandler(contracts.updatePassword, req, res, 
-		function (req, res) {
-			accountService.updatePassword( req.body, function(err, response, token) {
-				if (err) {
-					res.send( response );
-				}
-				else {
-					res.set('Authorization', token);
-					res.set('Access-Control-Expose-Headers', 'Authorization');
-					res.send( response );
-				}
-			});
-});
-*/
 app.post('/login', jsonParser, function(req, res) {
 	logger.info("hit \'login\'");
 	requestBodyHandler(contracts.login, req, res, 

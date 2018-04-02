@@ -106,23 +106,6 @@ exports.login = {
 		'type':"string"		
 	}
 };
-/*exports.forgotPassword = {
-	'email':{
-		'required':true,
-		'type':"string"
-	}
-};
-exports.updatePassword = {
-	// no need for email.
-	'token':{
-		'required':true,
-		'type':"string"
-	},
-	'new_password':{
-		'required':true,
-		'type':"string"
-	}
-};*/
 exports.getUserInfo = {}
 exports.changePassword = {
 	'old_password':{

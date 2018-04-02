@@ -1,6 +1,6 @@
 var jwt = require('jsonwebtoken'); //documentation: https://github.com/auth0/node-jsonwebtoken
 var contracts = require('./contracts');
-var env = require('./environment');
+var env = 	require('../environment');
 var logger = require('winston');
 
 /*

@@ -1,4 +1,4 @@
-var env = require('./environment');
+var env = 	require('../environment');
 var logger = require('winston');
 var stripe = require("stripe")(env.stripe_API_key);
 

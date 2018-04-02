@@ -71,7 +71,7 @@ DROP PROCEDURE IF EXISTS getUserInfo;
 DELIMITER //
 CREATE PROCEDURE getUserInfo(IN user_id INT UNSIGNED)
 BEGIN
-   SELECT user_info FROM users WHERE users.u_id = user_id;
+   SELECT email, user_info FROM users WHERE users.u_id = user_id;
 END //
 DELIMITER ;
 
@@ -454,9 +454,9 @@ CREATE PROCEDURE getModuleList(IN user_id INT UNSIGNED)
 BEGIN
 	-- only if the user_id exists
 	IF user_id = (SELECT u_id FROM users WHERE users.u_id = user_id) THEN
-		SELECT * FROM user_module_status INNER JOIN modules 
-			ON user_module_status.m_id = modules.mod_id;
-		-- SELECT mod_id, module_name, module_number, module_description FROM modules;
+		-- SELECT * FROM user_module_status INNER JOIN modules 
+			-- ON user_module_status.m_id = modules.mod_id;
+		SELECT mod_id, module_name, module_number FROM modules;
 	END IF;
 	-- SELECT * FROM user_module_status WHERE user_module_status.u_id = user_id;
 END //

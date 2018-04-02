@@ -1,5 +1,5 @@
 var mysql = require('mysql');
-var env = require('./environment');
+var env = 	require('../environment');
 
 var poolInfo = {connectionLimit:env.limit,
                 host: env.host,

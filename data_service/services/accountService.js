@@ -1,5 +1,5 @@
 var db = require("./dbService");
-var env = 	require('./environment');
+var env = 	require('../environment');
 var authService = 	require('./authService');
 var emailService = 	require('./emailService');
 var paymentService = 	require('./paymentService');
@@ -149,6 +149,7 @@ exports.updateForgotPass = function(user_sent_token, reqBody, callback){
 		}
 	});
 }
+
 
 exports.getAllCounters = function(user_sent_token, callback){
 	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
