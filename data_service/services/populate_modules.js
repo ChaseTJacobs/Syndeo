@@ -330,10 +330,10 @@ var mod4 = {
 							number: 1,
 							introText: null,
 							videoLink: null,
-							pictures: {
-							  '4/step1-2-keyword.png',
-							  '4/step1-2-resume.png'
-							},
+							pictures: [
+                              '4/step1-2-keyword.png',
+                              '4/step1-2-resume.png'
+							],
 							paragraphs: null,
 							bullets: null,
 							outroText: null,
@@ -343,10 +343,10 @@ var mod4 = {
 							number: 2,
 							introText: null,
 							videoLink: null,
-							pictures: {
-							  '4/step1-3-keyword.png',
-							  '4/step1-3-resume.png'
-							},
+							pictures: [
+                              '4/step1-3-keyword.png',
+                              '4/step1-3-resume.png'
+							],
 							
 							paragraphs: null,
 							bullets: null,
