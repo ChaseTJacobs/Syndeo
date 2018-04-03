@@ -2,8 +2,9 @@ var dbService = require('./dbService');
 
 populate_module = function(mod_obj, mod_str){
 	dbService.query(
-		"INSERT INTO modules(module_name, module_number, module_description, module_content) VALUES(?,?,?,?)",
-		[mod_obj.moduleName, mod_obj.moduleNumber, null, mod_str],
+		// "INSERT INTO modules(module_name, module_number, module_description, module_content) VALUES(?,?,?,?)",
+		"UPDATE modules SET module_content=? WHERE modules.module_number =?;",
+		[mod_str, mod_obj.moduleNumber],
 		function(err, rows) {
 			if (err) {
 				console.log(JSON.stringify(err));
@@ -22,148 +23,7 @@ var mod1 = {
       numSSonFinal: 2,
       intro: null,
       img: null,
-      steps: [
-        {
-          number: 0,
-          numSubsteps: 1,
-          name: 'Leverage Your Existing Network',
-          why: 'The best networking results are achieved by students who have strong relationships with their networks. You will save a lot of time by networking with those you already know.',
-          whatLearn: null,
-          img: null,
-          substeps: [
-            {
-              title: null,
-              number: 0,
-              introText: null,
-              // choose bettween a video
-              videoLink: null,
-              // or Pictures
-              pictures: null,
-              // or paragraphs
-              paragraphs: [
-                {
-                  text: 'Talk to people in your existing networks to see if anyone knows anyone who works for the company/organization (FBI) you\'re interested in working for.',
-                  picture: null
-                },
-                {
-                  text: 'Your existing networks include your family, friends, church groups, clubs, societies, work, and any other groups you\'re apart of!',
-                  picture: null
-                },
-                {
-                  text: 'As you are referred to individuals who work at your ideal company, record their names in the \"Networking Assistant Workbook.\"',
-                  picture: null
-                }
-              ],
-              // or bulleted lists
-              bullets: null,
-              outroText: null,
-            }
-          ]
-        },
-        {
-          number: 1,
-          numSubsteps: 2,
-          name: 'Use LinkedIn to develop networking leads',
-          why: null,
-          whatLearn: null,
-          img: null,
-          substeps: [
-            {
-              title: null,
-              number: 0,
-              introText: 'Watch the video tutorial (with written guidlines). Make sure to use your "Networking Assistant Workbook" to record the names and information of those you want to connect with!',
-              // choose bettween a video
-              videoLink: 'https://www.youtube.com/embed/wcJ46Uw3W-Y',
-              // or Pictures
-              pictures: null,
-              // or paragraphs
-              paragraphs: null,
-              // or bulleted lists
-              bullets: null,
-              outroText: null,
-            },
-            {
-              title: null,
-              number: 1,
-              introText: 'Complete the following steps',
-              // choose bettween a video
-              videoLink: null,
-              // or Pictures
-              pictures: null,
-              // or paragraphs
-              paragraphs: null,
-              // or bulleted lists
-              bullets: [
-                {
-                  title: null,
-                  numbered: false,
-                  list: [
-                    'Click on the magnifying glass symbol or select "search for people with filters" in the LinkedIn search bar.',
-                    'Enter a role of interest in the "Title" field in the "Keywords" section. (You have to click on "Keywords" to see the "Title" field.)',
-                    'Enter or select a company of interest in the "Current companies" field.',
-                    'Use the various different fields to narrow your search further. For example, select a geographic location that you want to live in.',
-                    'At this point, simply record the name, current company, and role of the contacts you find. (You can click the button below at the end of this section to record that information.)'
-                  ],
-                  picture: null
-                }
-              ],
-              outroText: null,
-            }
-          ]
-        },
-        {
-          number: 2,
-          numSubsteps: 2,
-          name: 'Use LinkedIn to find recruiters to network with',
-          why: null,
-          whatLearn: null,
-          img: null,
-          substeps: [
-            {
-              title: null,
-              number: 0,
-              introText: 'Watch the video tutorial (with written guidlines). Make sure to use your "Networking Assistant Workbook" to record the names and information of those you want to connect with!',
-              // choose bettween a video
-              videoLink: 'https://www.youtube.com/embed/Uvam3-7LFOE',
-              // or Pictures
-              pictures: null,
-              // or paragraphs
-              paragraphs: null,
-              // or bulleted lists
-              bullets: null,
-              outroText: null,
-            },
-            {
-              title: null,
-              number: 1,
-              introText: 'Complete the following steps',
-              // choose bettween a video
-              videoLink: null,
-              // or Pictures
-              pictures: null,
-              // or paragraphs
-              paragraphs: null,
-              // or bulleted lists
-              bullets: [
-                {
-                  title: null,
-                  numbered: false,
-                  list: [
-                    'Click on the magnifying glass symbol or select "search for people with filters" in the LinkedIn search bar.',
-                    'Enter "recruiter," "talent acquisition," or something similar in the "Title" field in the "Keywords" section. (You have to click on "Keywords" to see the "Title" field.)',
-                    'Enter or select a company of interest in the "Current companies" field.',
-                    'Up in the actual search bar, type the type of role your interested in. (Something like marketing, finance, operations - you get the picture.)',
-                    'Use the various different fields to narrow your search further. For example, select a geographic location that you want to live in.',
-                    'At this point, simply record the name, current company, and role of the contacts you find. (You can click the button below at the end of this section to record that information.)'
-                  ],
-                  picture: null
-                }
-              ],
-              outroText: null,
-            }
-          ]
-        }
-      ]
+      poopoo:"poopopopopopopopopoppooopopoopopoooop"
     };
 var mod1_str = JSON.stringify(mod1);
 
@@ -643,5 +503,5 @@ var mod4_str = JSON.stringify(mod4);
 
 
 populate_module(mod1, mod1_str);
-populate_module(mod2, mod2_str);
-populate_module(mod4, mod4_str);
+// populate_module(mod2, mod2_str);
+// populate_module(mod4, mod4_str);
