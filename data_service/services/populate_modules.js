@@ -17,14 +17,147 @@ populate_module = function(mod_obj, mod_str){
 }
 
 var mod1 = {
-      moduleNumber: 1,
-      moduleName: 'Find Professionals at Your Ideal Company to Network With',
-      numOfSteps: 3,
-      numSSonFinal: 2,
-      intro: null,
-      img: null,
-      poopoo:"poopopopopopopopopoppooopopoopopoooop"
-    };
+			moduleNumber: 1,
+			moduleName: 'Find Professionals at Your Ideal Company to Network With',
+			numOfSteps: 3,
+			numSSonFinal: 2,
+			intro: 'The first step to networking is to find the right professionals to network with. Below, you\'ll learn how to find professionals to network with in companies you want to work for. At least 50% of job openings are never advertised. Most jobs are filled by word of mouth, or networking. That\'s why it\'s so important to build relationships with professionals who have taken the path you want to pursue.',
+			img: '/4/step1-3-keyword.png', //need
+			steps: [
+				{
+					number: 0,
+					numSubsteps: 1,
+					name: 'Leverage Your Existing Network',
+					why: 'The best networking results are achieved by students who have strong relationships with their networks. You will save a lot of time by networking with those you already know.',
+					whatLearn: [
+						'Learn how to totally BS bullet points 100% of the time',
+						'Especially on things that really imporant',
+						'Get all you need done with just a few words you threw together'
+					], //need
+					img: '/4/step1-3-keyword.png', //nice to have
+					substeps: [
+						{
+							title: null,
+							number: 0,
+							introText: null,
+							videoLink: null,
+							pictures: null,
+							paragraphs: [
+								{
+									text: 'Talk to people in your existing networks to see if anyone knows anyone who works for the company/organization you\'re interested in working for.',
+									picture: null
+								},
+								{
+									text: 'Your existing networks include your family, friends, church groups, clubs, societies, work, and any other groups you\'re apart of!',
+									picture: null
+								},
+								{
+									text: 'As you are referred to individuals who work at your ideal company, record their names in the \"Network Relationship Manager\"', // Link to NRM
+									picture: null
+								}
+							],
+							bullets: null,
+							outroText: null,
+						}
+					]
+				},
+				{
+					number: 1,
+					numSubsteps: 2,
+					name: 'Use LinkedIn to develop networking leads',
+					why: 'LinkedIn is a great tool to be used with networking, as it can provide detailed information about individuals career, as well as a large list of potential contacts', // need
+					whatLearn: [
+						'Learn how to totally BS bullet points 100% of the time',
+						'Especially on things that really imporant',
+						'Get all you need done with just a few words you threw together'
+					], // need
+					img: '/4/step1-3-keyword.png', //nice to have
+					substeps: [
+						{
+							title: null,
+							number: 0,
+							introText: 'Watch the video tutorial (with written guidlines). Make sure to use your "Network Relationship Manager" to record the names and information of those you want to connect with!', //needs rewording
+							videoLink: 'https://www.youtube.com/embed/wcJ46Uw3W-Y',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: null,
+							number: 1,
+							introText: 'Complete the following steps',
+							videoLink: null,
+							pictures: null,
+							paragraphs: null,
+							bullets: [
+								{
+									title: null,
+									numbered: false,
+									list: [
+										'Click on the magnifying glass symbol or select "search for people with filters" in the LinkedIn search bar.',
+										'Enter a role of interest in the "Title" field in the "Keywords" section. (You have to click on "Keywords" to see the "Title" field.)',
+										'Enter or select a company of interest in the "Current companies" field.',
+										'Use the various different fields to narrow your search further. For example, select a geographic location that you want to live in.',
+										'At this point, simply record the name, current company, and role of the contacts you find. (You can click the button below at the end of this section to record that information.)'
+									],
+									picture: null
+								}
+							],
+							outroText: null,
+						}
+					]
+				},
+				{
+					number: 2,
+					numSubsteps: 2,
+					name: 'Use LinkedIn to find recruiters to network with',
+					why: 'This step will allow you to contact James so he can fix this text.', //need
+					whatLearn: [
+						'Learn how to totally BS bullet points 100% of the time',
+						'Especially on things that really imporant',
+						'Get all you need done with just a few words you threw together'
+					], //need
+					img: '/4/step1-3-keyword.png', //nice to have
+					substeps: [
+						{
+							title: null,
+							number: 0, 
+							introText: 'Watch the video tutorial (with written guidlines). Make sure to use your "Network Relationship Manager" to record the names and information of those you want to connect with!', //needs rewording
+							videoLink: 'https://www.youtube.com/embed/Uvam3-7LFOE',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: null,
+							number: 1,
+							introText: 'Complete the following steps',
+							videoLink: null,
+							pictures: null,
+							paragraphs: null,
+							bullets: [
+								{
+									title: null,
+									numbered: false,
+									list: [
+										'Click on the magnifying glass symbol or select "search for people with filters" in the LinkedIn search bar.',
+										'Enter "recruiter," "talent acquisition," or something similar in the "Title" field in the "Keywords" section. (You have to click on "Keywords" to see the "Title" field.)',
+										'Enter or select a company of interest in the "Current companies" field.',
+										'Up in the actual search bar, type the type of role your interested in. (Something like marketing, finance, operations - you get the picture.)',
+										'Use the various different fields to narrow your search further. For example, select a geographic location that you want to live in.',
+										'At this point, simply record the name, current company, and role of the contacts you find in the Network Relationship Manager' // needs rewording
+									],
+									picture: null
+								}
+							],
+							outroText: null,
+						}
+					]
+				}
+			]
+		};
 var mod1_str = JSON.stringify(mod1);
 
 var mod2 = {
