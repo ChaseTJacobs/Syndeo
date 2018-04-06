@@ -2,9 +2,10 @@ var dbService = require('./dbService');
 
 populate_module = function(mod_obj, mod_str){
 	dbService.query(
-		// "INSERT INTO modules(module_name, module_number, module_description, module_content) VALUES(?,?,?,?)",
-		"UPDATE modules SET module_content=? WHERE modules.module_number =?;",
-		[mod_str, mod_obj.moduleNumber],
+		"INSERT INTO modules(module_name, module_number, module_description, module_content) VALUES(?,?,?,?)",
+		[mod_obj.moduleName, mod_obj.moduleNumber, null, mod_str],
+		// "UPDATE modules SET module_content=? WHERE modules.module_number =?;",
+		// [mod_str, mod_obj.moduleNumber],
 		function(err, rows) {
 			if (err) {
 				console.log(JSON.stringify(err));
