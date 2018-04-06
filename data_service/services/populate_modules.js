@@ -602,5 +602,5 @@ var mod4_str = JSON.stringify(mod4);
 
 
 populate_module(mod1, mod1_str);
-// populate_module(mod2, mod2_str);
-// populate_module(mod4, mod4_str);
+populate_module(mod2, mod2_str);
+populate_module(mod4, mod4_str);
