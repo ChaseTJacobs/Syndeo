@@ -14,6 +14,7 @@ exports.encrypt = function(plain_text, callback) {
 		// logger.info("encrypt: encrypted = %s", encrypted);
 		callback(null, encrypted);
 	} catch (error) {
+		logger.error("cipherService.encrypt: error trying to encrypt: ", error);
 		callback(error, null);
 	}
 }
@@ -26,6 +27,7 @@ exports.decrypt = function(cipher_text, callback) {
 		// logger.info("decrypt: decrypted = %s", decrypted);
 		callback(null, decrypted);
 	} catch (error) {
+		logger.error("cipherService.decrypt: error trying to decrypt: ", error);
 		callback(error, null);
 	}
 }

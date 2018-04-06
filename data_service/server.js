@@ -38,7 +38,7 @@ requestBodyHandler = function(contract, req, res, callback) {
 	else {
 		contracts.ingress(req, contract, function(err, err_obj, req) {
 			if (err) {
-				// logger.warn("bodyHandler, error: ", err_obj.data);
+				logger.warn("bodyHandler, error: ", err_obj.data);
 				// This also fires off if encryption of pii fails. That's a 500 error.
 				res.send(err_obj);
 			}
