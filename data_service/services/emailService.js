@@ -15,28 +15,28 @@ exports.confirmEmail = function(user_sent_token, reqBody, callback){
 		if (err1) {
 			callback(true, err1, null);
 		}
-		else if (!(decoded.email === reqBody.email)) {
-			logger.error("emailService.confirmEmail: EMAIL SWAP - %s != %s", decoded.email, reqBody.email);
+		else if (!(decoded.email === reqBody.email_plain)) {
+			logger.error("emailService.confirmEmail: EMAIL SWAP - %s != %s", decoded.email, reqBody.email_plain);
 			callback(true, contracts.EmailSwap_Error, null);
 		}
 		else {
-			db.query("CALL validateEmailToken(?,?)", [decoded.email, reqBody.token], function(err2, qr2){
+			db.query("CALL validateEmailToken(?,?)", [reqBody.email/*encrypted*/, reqBody.token], function(err2, qr2){
 				if (err2) {
 					logger.error("emailService.confirmEmail: validateEmailToken(sql): ", err2);
 					callback(true, contracts.DB_Access_Error, null);
 				}
 				else {
 					if (qr2.affectedRows < 1) {
-						logger.warn("emailService.confirmEmail: failed to validate token = %s for email = %s", reqBody.token, decoded.email);
+						logger.warn("emailService.confirmEmail: failed to validate token = %s for email = %s", reqBody.token, reqBody.email_plain);
 						callback(true, contracts.EmailConfirm_Failure, null);
 					}
 					else { // Success!
-						authService.generateJWT(env.trust_level_RESTRICTED, {'email':decoded.email}, function(err3, jwtoken){
+						authService.generateJWT(env.trust_level_RESTRICTED, {'email':reqBody.email_plain}, function(err3, jwtoken){
 							if (err3) {
 								callback(true, err3, null);
 							}
 							else {
-								logger.info("emailService.confirmEmail: email \'%s\' confirmed :) ", decoded.email);
+								logger.info("emailService.confirmEmail: email \'%s\' confirmed :) ", reqBody.email_plain);
 								callback(false, contracts.EmailConfirmed, jwtoken);
 							}
 						});
@@ -54,13 +54,12 @@ exports.emailToken = function(reqBody, callback){
 		3	email token to the client and expiration time.
 		4	send PRELIMINARY JWT
 	*/
-	authService.generateJWT(env.trust_level_PRELIMINARY, {'email':reqBody.email}, function(err1, jwtoken, candidate) {
+	authService.generateJWT(env.trust_level_PRELIMINARY, {'email':reqBody.email_plain}, function(err1, jwtoken, candidate) {
 		if (err1) {
 			callback(true, err1, null);
 		}
 		else {
-			// TODO: check if email is already in use?
-			db.query("CALL createEmailToken(?,?)", [candidate.email, candidate.token], function(err2, qr2){
+			db.query("CALL createEmailToken(?,?)", [reqBody.email/*encrypted*/, candidate.token], function(err2, qr2){
 				if (err2) {
 					logger.error("emailService.emailToken: createEmailToken(sql): ", err2);
 					callback(true, contracts.DB_Access_Error, null);

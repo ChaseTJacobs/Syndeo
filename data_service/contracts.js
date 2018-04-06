@@ -1,25 +1,19 @@
-/*
-	Syndeo API Request Body Contracts
-	- All endpoints, unless explicitly stated, require a valid JWT in the request header to work right.
-	- All endpoints, unless explicitly stated, are POST requests.
-*/
-var logger = 			require('winston');
+var env = require('./environment');
+var cipherService = require('./services/cipherService');
+var logger = require('winston');
 
-exports.enforce = function(req, contract, callback){
-	
+exports.ingress = function(req, contract, callback){
+	var example = {};
 	var resp_obj = { 
 		'err' : false,
 		'data' : []
 	};
 	
-	var example = {};
-	
-	for (key in contract) {
-		example[key] = contract[key].type;
-		
+	for (key in contract.reqs) {
+		example[key] = contract.reqs[key].type;
 		// catch missing required fields
 		if (req.body[key] === undefined) {
-			if (contract[key].required) {
+			if (contract.reqs[key].required) {
 				// missing required field!
 				resp_obj.err = true;
 				resp_obj.data.push({'msg':"missing required field", example});
@@ -30,397 +24,674 @@ exports.enforce = function(req, contract, callback){
 			}
 		}
 		else {
-			if (contract[key].required && req.body[key] === null) {
-				// required field is NULL!
-				resp_obj.err = true;
-				resp_obj.data.push({'msg':"required field is NULL", example});
+			if ((contract.reqs[key].required) &&
+				((req.body[key] === null) || (typeof contract.reqs[key].type === typeof "string" && req.body[key] === ""))) {
+					// required field is NULL/empty!
+					resp_obj.err = true;
+					resp_obj.data.push({'msg':"required field is NULL/empty", example});
 			}
-			else if ( (typeof req.body[key] != typeof contract[key].type) && !(req.body[key] === null) ) {
+			else if ( (typeof req.body[key] != typeof contract.reqs[key].type) && !(req.body[key] === null) ) {
 				// wrong type!
 				resp_obj.err = true;
 				resp_obj.data.push({'msg':"wrong field type", example});
 			}
 			// else, we're okay.
+			else if (contract.reqs[key].is_pii) {
+				// encrypt Personally Identifying Information
+				// logger.info("ingress: encrypting pii, {%s : %s}...", key, req.body[key]);
+				req.body[key+"_plain"] = req.body[key]; // for use by endpoint logic
+				cipherService.encrypt(req.body[key], function(err, encrypted){
+					if (err) {
+						// TODO: We need an official error code for this
+						callback(true, {'data':[{'msg':"failed to encrypt pii"}]}, req); 
+					}
+					else {
+						req.body[key] = encrypted;
+					}
+				});
+			}
 		}
-		
 		example = {};
 	}
 	
-	logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
+	// logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
+	logger.info("enforceContract: %s",(resp_obj.err ? "BAD" : "GOOD"));
 	callback(resp_obj.err, resp_obj, req);
 	
 }
-
-
-exports.emailToken = {
-	'email':{
-		'required':true,
-		'type':"string"
+exports.egress = function(response_data, contract, callback){
+	// logger.info("egress: response data IN = %s", JSON.stringify(response_data));
+	if (response_data instanceof Array){
+		for (key in contract.resp) {
+			// for (row in response_data){
+			response_data.forEach(function(row){
+				if (contract.resp[key].is_pii && /*not null or undefined*/ row[key]){
+					cipherService.decrypt(row[key], function(err, decrypted){
+						if (err) {
+							// TODO: We need an official error code for this. here or in cipherService.
+							callback(err, null); 
+						}
+						else {
+							row[key] = decrypted;
+						}
+					});
+				}
+			});
+			// }
+		}
 	}
+	else {
+		for (key in contract.resp) {
+			if (contract.resp[key].is_pii && /*not null or undefined*/ response_data[key]){
+				cipherService.decrypt(response_data[key], function(err, decrypted){
+					if (err) {
+						// TODO: We need an official error code for this
+						callback(err, null); 
+					}
+					else {
+						response_data[key] = decrypted;
+					}
+				});
+			}
+		}
+	}
+	// logger.info("egress: response data OUT = ", response_data);
+	callback(null, response_data);
+}
+
+// TODO: add non-pii fields to resp objs for completeness sake.
+// Email
+exports.emailToken = {
+	'reqs':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
+	},
+	'resp':{}
 };
 exports.confirmEmail = {
-	'email':{
-		'required':true,
-		'type':"string"
+	'reqs':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'token':{
+			'required':true,
+			'type':"string"
+		}
 	},
-	'token':{
-		'required':true,
-		'type':"string"
-	}
+	'resp':{}
 };
+// Account
 exports.updateForgotPass = {
-	'email':{ /* identifier */
-		'required':true,
-		'type':"string"
+	'reqs':{	
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'new_password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	},
-	'new_password':{
-		'required':true,
-		'type':"string"
+	'resp':{}
+};
+exports.createAccount_DEV = {
+	'reqs':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true		
+		},
+		'user_info':{
+			'required':false,
+			'type':{'object':"object"}		
+		},
+		'stripe_token':{
+			'required':false,
+			'type':"string"	
+		}
+	},
+	'resp':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	}
 };
 exports.createAccount = {
-	'email':{ /* identifier */
-		'required':true,
-		'type':"string"
+	'reqs':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true		
+		},
+		'user_info':{
+			'required':false,
+			'type':{'object':"object"}		
+		},
+		'stripe_token':{
+			'required':true,
+			'type':"string"	
+		}
 	},
-	'password':{
-		'required':true,
-		'type':"string"		
-	},
-	'user_info':{
-		'required':false,
-		'type':{'object':"object"}		
-	},
-	'stripe_token':{
-		'required':true,
-		'type':"string"	
+	'resp':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	}
 };
 exports.login = {
-	'email':{ /* identifier */
-		'required':true,
-		'type':"string"
+	'reqs':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true		
+		}
 	},
-	'password':{ /* identifier */
-		'required':true,
-		'type':"string"		
+	'resp':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	}
 };
-exports.getUserInfo = {}
-exports.changePassword = {
-	'old_password':{
-		'required':true,
-		'type':"string"
-	},
-	'new_password':{
-		'required':true,
-		'type':"string"
+exports.getUserInfo = {
+	'resp':{
+		'email':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	}
+}
+exports.changePassword = {
+	'reqs':{
+		'old_password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'new_password':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
+	},
+	'resp':{}
 };
 exports.updateUserInfo = {
-	'user_info':{
-		'required':true,
-		'type':{'object':"object"}		
-	}
+	'reqs':{
+		'user_info':{
+			'required':true,
+			'type':{'object':"object"}		
+		}
+	},
+	'resp':{}
 };
-exports.getContactList = {}
-// - makePayment???
-exports.createContact = {
-	'firstname':{
-		'required':true,
-		'type':"string"
+exports.getAllCounters = {
+	'resp':{}
+}
+exports.updateGlobalCounters = {
+	'reqs':{
+		'email_response':{
+			'required':false,
+			'type':5
+		},
+		'resume_request':{      
+			'required':false,
+			'type':5
+		},
+		'msg_or_call_from':{
+			'required':false,
+			'type':5
+		}
 	},
-	'lastname':{
-		'required':true,
-		'type':"string"		
-	},
-	'organization':{
-		'required':false,
-		'type':"string"		
-	},
-	'position':{
-		'required':false,
-		'type':"string"	
-	},
-	'email':{
-		'required':false,
-		'type':"string"		
-	},
-	'phone':{
-		'required':false,
-		'type':"string"		
-	},
-	'url_linkedin':{
-		'required':false,
-		'type':"string"		
-	},
-	'mail_address':{
-		'required':false,
-		'type':"string"		
-	},
-	'notes':{
-		'required':false,
-		'type':"string"		
-	},
-	'other_info':{
-		'required':false,
-		'type':{'object':"object"},
-	},
-	'created_milli':{
-		'required':false,
-		'type':5//millisecs
+	'resp':{}
+}
+// Contacts
+exports.getContactList = {
+	'resp':{
+		'firstname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'lastname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		}
 	}
+}
+exports.createContact = {
+	'reqs':{
+		'firstname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'lastname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true	
+		},
+		'organization':{
+			'required':false,
+			'type':"string"		
+		},
+		'position':{
+			'required':false,
+			'type':"string",
+			'is_pii':true	
+		},
+		'email':{
+			'required':false,
+			'type':"string",
+			'is_pii':true		
+		},
+		'phone':{
+			'required':false,
+			'type':"string",
+			'is_pii':true		
+		},
+		'url_linkedin':{
+			'required':false,
+			'type':"string",
+			'is_pii':true		
+		},
+		'mail_address':{
+			'required':false,
+			'type':"string",
+			'is_pii':true		
+		},
+		'notes':{
+			'required':false,
+			'type':"string"		
+		},
+		'other_info':{
+			'required':false,
+			'type':{'object':"object"},
+		},
+		'created_milli':{
+			'required':false,
+			'type':5//millisecs
+		}
+	},
+	'resp':{}
 };
 exports.getContactInfo = {
-	'c_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{
+		'firstname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'lastname':{
+			'required':true,
+			'type':"string",
+			'is_pii':true
+		},
+		'position':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'email':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'phone':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'url_linkedin':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'mail_address':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		}
 	}
 }
 exports.updateContactInfo = {
-	'c_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		},
+		'firstname':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'lastname':{
+			'required':false,
+			'type':"string",
+			'is_pii':true		
+		},
+		'organization':{
+			'required':false,
+			'type':"string"		
+		},
+		'position':{
+			'required':false,
+			'type':"string",
+			'is_pii':true	
+		},
+		'email':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'phone':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'url_linkedin':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'mail_address':{
+			'required':false,
+			'type':"string",
+			'is_pii':true
+		},
+		'notes':{
+			'required':false,
+			'type':"string"		
+		},
+		'other_info':{
+			'required':false,
+			'type':{'object':"object"}		
+		}
 	},
-	'firstname':{
-		'required':false,
-		'type':"string"
-	},
-	'lastname':{
-		'required':false,
-		'type':"string"		
-	},
-	'organization':{
-		'required':false,
-		'type':"string"		
-	},
-	'position':{
-		'required':false,
-		'type':"string"	
-	},
-	'email':{
-		'required':false,
-		'type':"string"		
-	},
-	'phone':{
-		'required':false,
-		'type':"string"		
-	},
-	'url_linkedin':{
-		'required':false,
-		'type':"string"		
-	},
-	'mail_address':{
-		'required':false,
-		'type':"string"		
-	},
-	'notes':{
-		'required':false,
-		'type':"string"		
-	},
-	'other_info':{
-		'required':false,
-		'type':{'object':"object"}		
-	}
+	'resp':{}
 };
 exports.updateContactStats = {
-	'c_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		},
+		'email_response':{
+			'required':false,
+			'type':5
+		},
+		'resume_request':{
+			'required':false,
+			'type':5		
+		},
+		'msg_or_call_from':{
+			'required':false,
+			'type':5		
+		}
 	},
-	'email_response':{
-		'required':false,
-		'type':5
-	},
-	'resume_request':{
-		'required':false,
-		'type':5		
-	},
-	'msg_or_call_from':{
-		'required':false,
-		'type':5		
-	}
+	'resp':{}
 };
 exports.deleteContact = {
-	'c_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
+// Activities
 exports.deleteActivity = {
-	'a_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'a_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
 exports.createActivity = {
-	'c_id':{
-		'required':false,
-		'type':5
+	'reqs':{
+		'c_id':{
+			'required':false,
+			'type':5
+		},
+		'atype_id':{
+			'required':true,
+			'type':5
+		},
+		'activity_name':{
+			'required':true,
+			'type':"string"
+		},
+		'event_date':{
+			'required':true,
+			'type':5
+		},
+		'notes':{
+			'required':false,
+			'type':"string"
+		},
+		'completed':{
+			'required':false,
+			'type':5 // 0/1 = t/f
+		},
+		'location':{
+			'required':false,
+			'type':"string"
+		}
 	},
-	'atype_id':{
-		'required':true,
-		'type':5
-	},
-	'activity_name':{
-		'required':true,
-		'type':"string"
-	},
-	'event_date':{
-		'required':true,
-		'type':5
-	},
-	'notes':{
-		'required':false,
-		'type':"string"
-	},
-	'completed':{
-		'required':false,
-		'type':5 // 0/1 = t/f
-	},
-	'location':{
-		'required':false,
-		'type':"string"
-	}
+	'resp':{}
 }
 exports.getContactActivities = {
-	'c_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
-exports.getActivityTypes = {}
-exports.getActivityList = {}
+exports.getActivityTypes = {
+	'resp':{}
+}
+exports.getActivityList = {
+	'resp':{}
+}
 exports.updateActivity = {
 	// No c_id here. can't change who an activity belongs to.
-	'a_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'a_id':{
+			'required':true,
+			'type':5
+		},
+		'atype_id':{
+			'required':false,
+			'type':5
+		},
+		'activity_name':{
+			'required':false,
+			'type':"string"
+		},
+		'event_date':{
+			'required':false,
+			'type':5
+		},
+		'notes':{
+			'required':false,
+			'type':"string"
+		},
+		'completed':{
+			'required':false,
+			'type':5
+		},
+		'location':{
+			'required':false,
+			'type':"string"
+		}
 	},
-	'atype_id':{
-		'required':false,
-		'type':5
-	},
-	'activity_name':{
-		'required':false,
-		'type':"string"
-	},
-	'event_date':{
-		'required':false,
-		'type':5
-	},
-	'notes':{
-		'required':false,
-		'type':"string"
-	},
-	'completed':{
-		'required':false,
-		'type':5
-	},
-	'location':{
-		'required':false,
-		'type':"string"
-	}
+	'resp':{}
 }
+// IIScripts
 exports.createIIscript = {
-	'c_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		},
+		'text':{
+			'required':true,
+			'type':"string"
+		}
 	},
-	'text':{
-		'required':true,
-		'type':"string"
-	}
+	'resp':{}
 }
 exports.getContactIIScripts = {
-	'c_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'c_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
-exports.getIIScriptQs = {}
+exports.getIIScriptQs = {
+	'resp':{}
+}
 exports.createIIScriptQ = {
-	'text':{
-		'required':true,
-		'type':"string"
-	}
+	'reqs':{
+		'text':{
+			'required':true,
+			'type':"string"
+		}
+	},
+	'resp':{}
 }
 exports.deleteIIScriptQ = {
-	'q_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'q_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
 exports.updateIIscript = {
-	'ii_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'ii_id':{
+			'required':true,
+			'type':5
+		},
+		'c_id':{
+			'required':true,
+			'type':5
+		},
+		'text':{
+			'required':true,
+			'type':"string"
+		}
 	},
-	'c_id':{
-		'required':true,
-		'type':5
-	},
-	'text':{
-		'required':true,
-		'type':"string"
-	}
+	'resp':{}
 }
 exports.deleteIIscript = {
-	'ii_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'ii_id':{
+			'required':true,
+			'type':5
+		},
+		'c_id':{
+			'required':true,
+			'type':5
+		}
 	},
-	'c_id':{
-		'required':true,
-		'type':5
-	}
+	'resp':{}
 }
-exports.getModuleList = {}
-exports.getUserModStatus = {}
+// Modules
+exports.getModuleList = {
+	'resp':{}
+}
+exports.getUserModStatus = {
+	'resp':{}
+}
 exports.getModuleContent = {
-	'mod_id':{
-		'required':true,
-		'type':5
-	}
+	'reqs':{
+		'mod_id':{
+			'required':true,
+			'type':5
+		}
+	},
+	'resp':{}
 }
 exports.updateMyModules = {
-	'mod_id':{
-		'required':true,
-		'type':5
+	'reqs':{
+		'mod_id':{
+			'required':true,
+			'type':5
+		},
+		'recommended':{
+			'required':false,
+			'type':5
+		},
+		'interested':{
+			'required':false,
+			'type':5
+		},
+		'completed':{
+			'required':false,
+			'type':5
+		},
+		'in_progress':{
+			'required':false,
+			'type':5
+		}
 	},
-	'interested':{
-		'required':false,
-		'type':5
-	},
-	'completed':{
-		'required':false,
-		'type':5
-	},
-	'in_progress':{
-		'required':false,
-		'type':5
-	}
-}
-exports.getAllCounters = {}
-exports.updateGlobalCounters = {
-	'email_response':{
-		'required':false,
-		'type':5
-	},
-	'resume_request':{      
-		'required':false,
-		'type':5
-	},
-	'msg_or_call_from':{
-		'required':false,
-		'type':5
-	}
+	'resp':{}
 }
 
 
 /*
 	Syndeo API Response Body Contracts
 	- see our docs for more readable notes
+*/
+/*
+			TODO: integrate request & response contracts.
+			TODO: make the status codes make sense relationship-wise.
+			TODO: implement "contracts.______" functionality on the front-end.
 */
 // General
 exports.DB_Access_Error = { 'data':"DB error. This is a problem.", 'status':299 };
@@ -446,11 +717,6 @@ exports.UpdateContStats_Success = { 'data':"success", 'status':116 }; // updateC
 exports.Bad_UserID = { 'data':"requested with possible bad u_id.", 'status':215 }; // getUserInfo // JWT breach or account delete shortly after login.
 exports.GetUinfo_Success = 117;
 exports.UpdateUinfo_Success = { 'data':"Success", 'status':118 };
-/*
-			TODO: integrate request & response contracts.
-			TODO: make the status codes make sense relationship-wise.
-			TODO: implement "contracts.______" functionality on the front-end.
-*/
 // more Contact Service
 exports.DeleteContact_Success = { 'data':"Success", 'status':119 };
 // Activities

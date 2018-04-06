@@ -10,7 +10,7 @@ exports.make_oneTime_payment = function(user_email, stripe_token, callback){
 	{
 		amount: env.registration_fee,
 		currency: "usd",
-		description: "Welcome! You've Successfully Registered with Joyful Networking.",
+		description: "Example charge",//"Welcome! You've Successfully Registered with Joyful Networking.",
 		source: stripe_token,
 		receipt_email: user_email,
 	},

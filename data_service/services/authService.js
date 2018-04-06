@@ -50,7 +50,7 @@ exports.generateJWT = function(trust_level, creds, callback) {
 		lifespan = env.full_lifespan;
 	}
 	
-	logger.info("authService.generateJWT: CREATING level %d token with u_id=%d & email=%s", trust_level, creds.u_id, creds.email);
+	// logger.info("authService.generateJWT: CREATING level %d token with u_id=%d & email=%s", trust_level, creds.u_id, creds.email);
 	token = jwt.sign( 
 		{ email: creds.email, u_id: creds.u_id }, 
 		secret, 
@@ -92,51 +92,13 @@ exports.verifyJWT = function(trust_level, user_sent_token, callback) {
 			}
 			else {
 				// missing or invalid or malformed signature
-				logger.warn("authService.verifyJWT: invalid sig: ", err);
+				logger.error("authService.verifyJWT: invalid sig: ", err);
 				callback(contracts.JWT_Malformed_Error, null);
 			}
 		}
 		else {
-			logger.info("authService.verifyJWT: DECODED level %d token with u_id=%d & email=%s", trust_level, decoded.u_id, decoded.email);
+			// logger.info("authService.verifyJWT: DECODED level %d token with u_id=%d & email=%s", trust_level, decoded.u_id, decoded.email);
 			callback(null, decoded);
 		}
 	});
 }
-/* OLD ones...
-// embeds the user's ID in the token
-exports.generate_AuthorizedAccess_Token = function(user_email, user_id, callback) {
-	var token = jwt.sign( { email: user_email, id : user_id }, 
-		env.AuthorizedAccess_secret, 
-		{ expiresIn: env.AuthorizedToken_lifespan, algorithm: 'HS512' },
-		function(err, token) {
-			if (err) {
-				logger.error("authService.generate_AuthorizedAccess_Token: ", err);
-				callback(contracts.JWT_Generation_Error, null);
-			}
-			else {
-				callback(null, token);
-			}
-		});
-}
-
-exports.verify_AuthorizedAccess_Token = function(user_sent_token, callback) {
-	jwt.verify(user_sent_token, 
-		env.AuthorizedAccess_secret, 
-		{ algorithms: ['HS512'], maxAge : env.AuthorizedToken_lifespan }, 
-		function(err, decoded) {
-			if (err) {
-				if (err.name == 'TokenExpiredError') {
-					logger.info("authService.verify_AuthorizedAccess_Token: expired token: ", err);
-					callback(contracts.JWT_Expiration_Error, null);
-				}
-				else {
-					// missing or invalid or malformed signature
-					logger.warn("authService.verify_AuthorizedAccess_Token: invalid sig: ", err);
-					callback(contracts.JWT_Malformed_Error, null);
-				}
-			}
-			else {
-				callback(null, decoded);
-			}
-		});
-}*/

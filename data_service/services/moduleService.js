@@ -5,6 +5,8 @@ var logger = 			require('winston');
 var env = 	require('../environment');
 
 
+
+
 exports.updateMyModules = function(user_sent_token, req_body, callback){
 	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
@@ -12,8 +14,8 @@ exports.updateMyModules = function(user_sent_token, req_body, callback){
 			callback(error);
 		}
 		else {
-			db.query("CALL updateUserModuleStatus(?,?,?,?,?)", 
-				[decoded_token.u_id, req_body.mod_id, req_body.interested, req_body.completed, req_body.in_progress], 
+			db.query("CALL updateUserModuleStatus(?,?,?,?,?,?)", 
+				[decoded_token.u_id, req_body.mod_id, req_body.recommended, req_body.interested, req_body.completed, req_body.in_progress], 
 				function(err, qr){
 					if(err) {
 						logger.error("moduleService.updateMyModules: updateUserModuleStatus(sql): ", err);
@@ -112,5 +114,45 @@ exports.getModuleList = function(user_sent_token, callback){
 				}
 			});
 		}
+	});
+}
+
+
+
+// not an endpoint...
+exports.autoPopulate_userModStatus = function(u_id){
+	db.query("SELECT mod_id FROM modules", [], function(err, qr){
+			if(err) {
+				logger.error("autoPopulate_userModStatus: could not retrieve module id's", err);
+			}
+			else {
+				if (qr.length == 0) {
+					logger.warn("autoPopulate_userModStatus: there appear to be ZERO modules in the DB. QR = %s", JSON.stringify(qr));
+				}
+				else {
+					logger.info("autoPopulate_userModStatus: Current Module ID's: %s", JSON.stringify(qr));
+					// here we will loop thru and Insert defaults for each user...
+					// but we really should be pulling this info from somewhere. Like the quiz results.
+					qr.forEach(function(module){
+						db.query(
+							"INSERT INTO user_module_status(u_id, m_id) VALUES(?,?)", 
+							[u_id, module.mod_id], 
+							function(err2, qr2){
+								if(err2) {
+									logger.error("autoPopulate_userModStatus: FAILED to create default user_module_status for user %d - ", u_id, err2);
+								}
+								else {
+									/*if (qr2.affectedRows != qr.length) {
+										logger.error("autoPopulate_userModStatus: possible inconsistency: affectedRows = %d, but #of modules = %d", qr2.affectedRows, qr.length);
+									}
+									else {
+										logger.info("autoPopulate_userModStatus: probably successful!");
+									}*/
+									logger.info("autoPopulate_userModStatus: probably successful!");
+								}
+							});
+					});
+				}
+			}
 	});
 }

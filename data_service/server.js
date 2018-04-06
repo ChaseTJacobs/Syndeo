@@ -29,26 +29,17 @@ app.use(function(req, res, next){
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
-/*// callback for endpoints that attach headers before sending response
-attachHeader_callback = function(err, response, token) {
-	if (err) {
-		res.send( response );
-	}
-	else {
-		res.set('Authorization', token);
-		res.set('Access-Control-Expose-Headers', 'Authorization');
-		res.send( response );
-	}
-}*/
+
 // handles jsonParser's responses & enforces request body contracts.
 requestBodyHandler = function(contract, req, res, callback) {
 	if (!req.body) {
 			return res.sendStatus(400);
 	}
 	else {
-		contracts.enforce(req, contract, function(err, err_obj, req) {
+		contracts.ingress(req, contract, function(err, err_obj, req) {
 			if (err) {
 				// logger.warn("bodyHandler, error: ", err_obj.data);
+				// This also fires off if encryption of pii fails. That's a 500 error.
 				res.send(err_obj);
 			}
 			else {
@@ -137,20 +128,38 @@ app.post('/login', jsonParser, function(req, res) {
 });
 app.post('/createAccount', jsonParser, function (req, res) {
 	// TODO: implement createAccount_DEV (no JWT auth)
-	logger.info("hit \'createAccount\'");
-	requestBodyHandler(contracts.createAccount, req, res, 
-		function (req, res) {
-			accountService.createAccount(req.get('Authorization'), req.body, function(err, response, token) {
-				if (err) {
-					res.send( response );
-				}
-				else {
-					res.set('Authorization', token);
-					res.set('Access-Control-Expose-Headers', 'Authorization');
-					res.send( response );
-				}
+	if (env.DEV_ENV) {
+		logger.info("hit \'createAccount_DEV\'");
+		requestBodyHandler(contracts.createAccount_DEV, req, res, 
+			function (req, res) {
+				accountService.createAccount_DEV(req.get('Authorization'),/* takes no JWT auth, */ req.body, function(err, response, token) {
+					if (err) {
+						res.send( response );
+					}
+					else {
+						res.set('Authorization', token);
+						res.set('Access-Control-Expose-Headers', 'Authorization');
+						res.send( response );
+					}
+				});
 			});
-		});
+	}
+	else {
+		logger.info("hit \'createAccount\'");
+		requestBodyHandler(contracts.createAccount, req, res, 
+			function (req, res) {
+				accountService.createAccount(req.get('Authorization'), req.body, function(err, response, token) {
+					if (err) {
+						res.send( response );
+					}
+					else {
+						res.set('Authorization', token);
+						res.set('Access-Control-Expose-Headers', 'Authorization');
+						res.send( response );
+					}
+				});
+			});
+	}
 });
 app.get('/getUserInfo', jsonParser, function (req, res) {
 	logger.info("hit \'getUserInfo\'");

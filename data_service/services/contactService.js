@@ -118,8 +118,19 @@ exports.getContactInfo = function(user_sent_token, req_body, callback){
 							callback(contracts.Bad_ContactID);
 						}
 						else {
-							logger.info("contactService.getContactInfo: success.");//: %s", fullname);
-							callback( {'data': {'contact_info':qr[0][0]}, 'status':contracts.GetContInfo_Success} );
+							contracts.egress(
+								qr[0][0],
+								contracts.getContactInfo,
+								function(crypt_err1, resp_data){
+									if (crypt_err1){
+										callback(true, crypt_err1, null); // failed to decrypt the pii
+									}
+									else {
+										logger.info("contactService.getContactInfo: success.");//: %s", fullname);
+										callback({'data':resp_data, 'status':contracts.GetContInfo_Success});
+									}
+								}
+							);
 						}
 					}
 			});
@@ -139,16 +150,34 @@ exports.getContactList = function(user_sent_token, callback){
 			db.query("CALL getAllContacts(?)", 
 				[decoded_token.u_id], 
 				function(err, qr){
-					var queryResult = {};
-					queryResult = qr[0];
-					
+					// var queryResult = {};
+					// queryResult = qr[0];
 					if(err) {
 						logger.error("contactService.getContactList: getAllContacts: ", err);
 						callback(contracts.DB_Access_Error);
 					}
 					else {
 						// console.log("\t\t \'getContactList\' query result: "+JSON.stringify(queryResult));
-						callback({'data':queryResult, 'status':contracts.GetList_Success});
+						// callback({'data':queryResult, 'status':contracts.GetList_Success});
+						/*contracts.egress(
+							qr[0],
+							contracts.getContactList,
+							function(resp_data){
+								callback( {'data': resp_data, 'status':contracts.GetList_Success} );
+							}
+						);*/
+						contracts.egress(
+							qr[0],
+							contracts.getContactList,
+							function(crypt_err1, resp_data){
+								if (crypt_err1){
+									callback(true, crypt_err1, null); // failed to decrypt the pii
+								}
+								else {
+									callback({'data':resp_data, 'status':contracts.GetList_Success});
+								}
+							}
+						);
 					}
 			});
 		}

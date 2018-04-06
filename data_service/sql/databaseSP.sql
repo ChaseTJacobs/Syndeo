@@ -55,6 +55,15 @@ BEGIN
 END //
 DELIMITER ;
 
+select '...procedure create - login' AS '';
+DROP PROCEDURE IF EXISTS login;
+DELIMITER //
+CREATE PROCEDURE login(IN u_email VARCHAR(64), u_pass VARCHAR(64))
+BEGIN
+   SELECT * FROM users WHERE users.email = u_email and users.password = u_pass;
+END //
+DELIMITER ;
+
 select '...procedure create - addUser' AS '';
 DROP PROCEDURE IF EXISTS addUser;
 DELIMITER //
@@ -491,10 +500,15 @@ DROP PROCEDURE IF EXISTS updateUserModuleStatus;
 DELIMITER //
 CREATE PROCEDURE updateUserModuleStatus(IN user_id INT UNSIGNED, 
 														 module_id INT UNSIGNED, 
+														 rec INT UNSIGNED, 
 														 intr INT UNSIGNED, 
 														 compl INT UNSIGNED, 
 														 inprog INT UNSIGNED)
 BEGIN
+	IF rec IS NOT NULL THEN
+		UPDATE user_module_status SET user_module_status.recommended = rec
+		WHERE user_module_status.u_id = user_id and user_module_status.m_id = module_id;
+	END IF;
 	IF intr IS NOT NULL THEN
 		UPDATE user_module_status SET user_module_status.interested = intr
 		WHERE user_module_status.u_id = user_id and user_module_status.m_id = module_id;

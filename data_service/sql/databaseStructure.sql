@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS user_module_status(
 	updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT user_module_relationship FOREIGN KEY(u_id) REFERENCES users(u_id),
 	CONSTRAINT module_table_relationship FOREIGN KEY(m_id) REFERENCES modules(mod_id)
+	-- TODO: solve problem: it may be possible for a user to have > 1 row per module...
 );
 CREATE TABLE IF NOT EXISTS activity_types(
 	atype_id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
