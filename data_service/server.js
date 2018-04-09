@@ -127,7 +127,6 @@ app.post('/login', jsonParser, function(req, res) {
 		});
 });
 app.post('/createAccount', jsonParser, function (req, res) {
-	// TODO: implement createAccount_DEV (no JWT auth)
 	if (env.DEV_ENV) {
 		logger.info("hit \'createAccount_DEV\'");
 		requestBodyHandler(contracts.createAccount_DEV, req, res, 
@@ -358,6 +357,7 @@ app.post('/updateMyModules', jsonParser, function (req, res) {
 			moduleService.updateMyModules(req.get('Authorization'), req.body, (response) => res.send(response))
 		});
 });
+
 
 /* --------------- App content endpoint ----------------- */
 // specify path for our static content
