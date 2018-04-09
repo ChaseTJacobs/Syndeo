@@ -1,0 +1,133 @@
+{
+			moduleNumber: 2,
+			moduleName: 'Begin to Build Relationships with Professionals',
+			numOfSteps: 2,
+			numSSonFinal: 3,
+			intro: 'At least 50% of available job opportunities aren\'t posted anywhere. Most companies prefer to hire candidates who have some sort of tie to the company already. It is critical to build relationships with professionals at companies you want to work for to have access to the other 50% of job opportunities out there.',
+			img: '/4/step1-3-keyword.png', //nice to have
+			steps: [
+				{
+					number: 0,
+					numSubsteps: 3,
+					name: 'Update your Professional Presence',
+					why: '1st impressions are very important. Before you build relationships that can help you get great internships, you need to look as awesome as you are. Present yourself well and finding your internship will be 100% easier.',
+					whatLearn: [
+						'Learn how to totally BS bullet points 100% of the time',
+						'Especially on things that really imporant',
+						'Get all you need done with just a few words you threw together'
+					], //need
+					img: '/4/step1-3-keyword.png', //nice to have
+					substeps: [
+						{
+							title: 'Update your LinkedIn profile',
+							number: 0,
+							introText: 'A lot of the communication you\'ll have with professionals will originate on LinkedIn. It\'s important to have a LinkedIn profile that exemplifies your value and shows you in the best light. Watch and listen to this video to learn how to stand out to professionals on LinkedIn:',
+							
+							videoLink: 'https://www.youtube.com/embed/4UcXDN9eGNE',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: 'Update your Resume',
+							number: 1,
+							introText: 'If you develop good relationships with professionals, it\'s likely you\'ll be asked for your resume. It\'s important that you have an effective and professional resume to show an employer. Go to www.joyfuljobsearch.com/tips to find articles to help you put together a great resume. Also, watch and listen to this video to learn how to create an effective and professional resume:',
+							
+							videoLink: 'https://youtube.com/embed/dI_RwRHPFTk',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: 'Learn to write a Cover Letter',
+							number: 2,
+							introText: 'Here are a few questions we hear a lot and their answers',
+							videoLink: null,
+							pictures: null,
+							paragraphs: null,
+							bullets: [
+								{
+									title: 'What is a cover letter?',
+									numbered: false,
+									list: [
+										'A cover letter explains your interest and fit for a specific company and position.',
+									],
+									picture: null
+								},
+								{
+									title: 'Why are cover letters important?',
+									numbered: false,
+									list: [
+										'Cover letters allow you to make a case for yourself in complete sentences. Cover letters allow you get your passion accross for a role and or company more powerfully than a resume can. Almost no one knows how to make a good cover letter; that means that if you write a good one, you will instantly stand out.'
+									],
+									picture: null
+								},
+								{
+									title: 'Do companies care about cover letters?',
+									numbered: false,
+									list: [
+										'Many companies and professionals have started to disregard cover letters because they don\'t do a good job of convincing the employer of anything. Most people treat cover letters as a 150-word essay they have to write to pass a class. Therefore, if you put a little bit of extra effort into your cover letter, you should see increased interest from companies and hiring managers.'
+									],
+									picture: null
+								}
+							],
+							outroText: null,
+						}
+					]
+				},
+				{
+					number: 1,
+					numSubsteps: 3,
+					name: 'Make 1st Contact',
+					why: 'Every thousand mile journey begins with a single step. Focusing on making a good first impression when you contact someone you want to learn from is critical; (that\'s why the first step in this module was to refine your LinkedIn profile and resume.) If you make a great impression with your first outreach effort, you\'re likely to get through to the person the next time you try and the time after that.',
+					whatLearn: [
+						'Learn how to totally BS bullet points 100% of the time',
+						'Especially on things that really imporant',
+						'Get all you need done with just a few words you threw together'
+					], //need
+					img: '/4/step1-3-keyword.png', //nice to have
+					substeps: [
+						{
+							title: 'Choose the best way to reach out to your contact',
+							number: 0,
+							introText: null,
+							videoLink: null,
+							pictures: null,
+							paragraphs: [
+								{
+									text: 'LinkedIn, Email, Phone, text message, Twitter, and Facebook are all legitimite ways to reach out to someone you hope to build a relationship with. Unless you know your contact won\'t mind getting a phone call, text message, or Facebook message from you, LinkedIn, Email, and Twitter are the best places to start.',
+									picture: '/4/step1-3-keyword.png' // need graphic
+								}
+							],
+							
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: 'Email',
+							number: 1,
+							introText: 'Email is the socially safest way to reach out to someone you\'ve never met. An email is more likely to cross someone\'s eyes than a LinkedIn message and its less invasive than a phone call. Of course, a phone call isn\'t a bad thing, but starting with an email is usually the best course of action. Here\'s a tutorial to show you how to write a simple intorduction email:',
+							
+							videoLink: 'https://youtube.com/embed/b3tZ-HdWck8',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: null,
+						},
+						{
+							title: 'LinkedIn',
+							number: 2,
+							introText: 'LinkedIn is a great way to reach out to someone you hope to build a relationship with. Watch this video to learn how to send a great introductory message to someone using LinkedIn:',
+							
+							videoLink: 'https://youtube.com/embed/D-zSy9p_R5k',
+							pictures: null,
+							paragraphs: null,
+							bullets: null,
+							outroText: 'Be aware that while LinkedIn is great, you shouldn\'t expect everyone to respond to you. Email will get a much higher response rate.',
+						}
+					]
+				}
+			]
+		}
