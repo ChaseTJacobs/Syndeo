@@ -143,13 +143,13 @@ exports.updateForgotPass = function(user_sent_token, reqBody, callback){
 						callback(true, contracts.DB_Access_Error, null);
 					}
 					else {
-						logger.info("accountService.updateForgotPass: query result = ", qr1);
+						// logger.info("accountService.updateForgotPass: query result = ", qr1);
 						if (qr1.affectedRows < 1 ) {
 							logger.warn("accountService.updateForgotPass: failed to update password for %s", decoded.email);
 							callback(true, contracts.UpdatePass_Failure, null);
 						}
 						else {
-							authService.generateJWT(env.trust_level_FULL, {'email':qr1[0][0].email, 'u_id':qr1[0][0].u_id}, function(err2, jwtoken){
+							authService.generateJWT(env.trust_level_FULL, {'email':decoded.email/*qr1[0][0].email*/, 'u_id':qr1[0][0].u_id}, function(err2, jwtoken){
 								if (err2) {
 									callback(true, err2, null);
 								}
