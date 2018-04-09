@@ -136,7 +136,7 @@ exports.updateForgotPass = function(user_sent_token, reqBody, callback){
 		}
 		else {
 			db.query("CALL updateForgotPassword(?,?)", 
-				[decoded.email, reqBody.new_password_plain],
+				[reqBody.email, reqBody.new_password_plain],
 				function(err1, qr1){
 					if(err1) {
 						logger.error("accountService.updateForgotPass: updateForgotPassword(sql): ", err1);
