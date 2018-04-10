@@ -196,7 +196,7 @@ exports.createContact = function(user_sent_token, req_body, callback){
 		else {
 			// Query DB for contacts
 			db.query("CALL newContact(?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-				[decoded_token.u_id, fullname, req_body.firstname, req_body.lastname, req_body.company, req_body.position, req_body.email, req_body.phone, req_body.url_linkedin, req_body.mail_address, req_body.notes, custom, req_body.created_milli], 
+				[decoded_token.u_id, fullname, req_body.firstname, req_body.lastname, req_body.organization, req_body.position, req_body.email, req_body.phone, req_body.url_linkedin, req_body.mail_address, req_body.notes, custom, req_body.created_milli], 
 				function(err, qr){
 					// var queryResult = {};
 					// queryResult = qr[0];
