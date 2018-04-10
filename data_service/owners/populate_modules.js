@@ -18,7 +18,7 @@
 	
 */
 
-var dbService = require('../dbService');
+var dbService = require('../services/dbService');
 var fs = require("fs");
 
 
@@ -130,3 +130,6 @@ delete_iiScriptQ = function(id){
 	parameters.
 	
 */
+
+editModule('mod2.json');
+editModule('mod4.json');
