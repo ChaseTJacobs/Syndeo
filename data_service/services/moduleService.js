@@ -92,12 +92,12 @@ exports.getUserModStatus = function(user_sent_token, callback){
 
 
 exports.getModuleList = function(user_sent_token, callback){
-	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
+	/*authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(error, decoded_token) {
 		if (error) {
 			callback(error);
 		}
-		else {
-			db.query("CALL getModuleList(?)", [decoded_token.u_id], function(err, qr){
+		else {*/
+			db.query("CALL getModuleList(?)", [0/* <- dummy var *//*decoded_token.u_id*/], function(err, qr){
 				if(err) {
 					logger.error("moduleService.getModuleList: getModuleList(sql): ", err);
 					callback(contracts.DB_Access_Error);
@@ -113,8 +113,8 @@ exports.getModuleList = function(user_sent_token, callback){
 					}
 				}
 			});
-		}
-	});
+		/*}
+	});*/
 }
 
 
