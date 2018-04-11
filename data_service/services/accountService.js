@@ -9,8 +9,6 @@ var contracts = 		require('../contracts');
 var logger = 			require('winston');
 
 
-
-
 exports.changePassword = function(user_sent_token, reqBody, callback){
 	authService.verifyJWT(env.trust_level_FULL, user_sent_token, function(err, decoded) {
 		if (err) {
@@ -33,90 +31,6 @@ exports.changePassword = function(user_sent_token, reqBody, callback){
 						logger.info("accountService.changePassword: changed password for user %d", decoded.u_id);
 						emailService.emailMessage(decoded.email, {'subject':"password changed", 'html':env.changedPassMsg}); // no callback...
 						callback(contracts.ChangePass_Success);
-					}
-				}
-			});
-		}
-	});
-}
-
-
-exports.createAccount = function(user_sent_token, reqBody, callback){
-	var userInfo = JSON.stringify(reqBody.user_info);
-	authService.verifyJWT(env.trust_level_RESTRICTED, user_sent_token, function(err, decoded) {
-		if (err) {
-			callback(true, err, null);
-		}
-		else if (!(decoded.email === reqBody.email_plain)) {
-			logger.error("accountService.createAccount: EMAIL SWAP - %s != %s", decoded.email, reqBody.email_plain);
-			callback(true, contracts.EmailSwap_Error, null);
-		}
-		else {
-			// comparing encrypted values
-			db.query("CALL isUserInDatabase(?)", [reqBody.email], function(err1, qr1){
-				if(err1) {
-					logger.error("accountService.createAccount: isUserInDatabase(sql): ", err1);
-					callback(true, contracts.DB_Access_Error, null);
-				}
-				else {
-					// logger.info("accountService.createAccount: isUserInDatabase: query result = ", qr1);
-					if (qr1[0].length > 0) {
-						logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email_plain);
-						callback(true, contracts.Username_Taken, null);
-					}
-					else {
-						paymentService.make_oneTime_payment(reqBody.email_plain, reqBody.stripe_token, function(pay_err, charge){
-							if (pay_err) {
-								callback(true, "Stripe Payment Error: "+JSON.stringify(pay_err), null);
-							}
-							else {
-								// here we are storing the encrypted values...
-								db.query("Call addUser(?,?,?)", [reqBody.email, reqBody.password, userInfo]/*stripe_token???*/, function (err2, qr2) {
-									if(err2) {
-										logger.error("accountService.createAccount: addUser: ", err2);
-										callback(true, contracts.DB_Access_Error, null);
-									}
-									else {
-										// logger.info("accountService.createAccount: addUser: query result = ", qr2);
-										if (qr2.affectedRows < 1) {
-											logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email_plain);
-											callback(true, contracts.Username_Taken, null);
-										}
-										else {
-											authService.generateJWT(env.trust_level_FULL, {'email':reqBody.email_plain/*qr2[0][0].email*/, 'u_id':qr2[0][0].u_id}, function(err3, jwtoken) {
-												if (err3) {
-													callback(true, err3, null);
-												}
-												else {
-													logger.info("accountService.createAccount: created account for %s", reqBody.email_plain);
-													// TODO: return {email, user_info}
-													// callback(false, {'data':qr2[0][0].user_info, 'status':contracts.NewAcct_Success}, jwtoken);
-													contracts.egress(
-														{'email':qr2[0][0].email, 'user_info':qr2[0][0].user_info}, // encrypted values!
-														contracts.createAccount,
-														function(resp_data){
-															callback(false, {'data':resp_data, 'status':contracts.NewAcct_Success}, jwtoken);
-														}
-													
-													);
-													
-													
-													// NOW, do some auto-population of some fields
-													db.query("Call auto_populate(?)", [qr2[0][0].u_id], function (err4, qr4) {
-														if(err4) {
-															logger.error("accountService.createAccount: auto_populate(sql): ", err4);
-														}
-														else {
-															logger.info("accountService.createAccount: successfully auto-populated %d rows for user %d", qr4.affectedRows, qr2[0][0].u_id);
-														}
-													});
-												}
-											});								
-										}
-									}
-								});
-							}
-						});
 					}
 				}
 			});
@@ -340,17 +254,107 @@ exports.login = function(reqBody, callback){
 }
 
 
-/*
-	DEV endpoint(s)
-*/
-
-exports.createAccount_DEV = function(user_sent_token, reqBody, callback){
+exports.createAccount = function(user_sent_token, reqBody, callback){
 	authService.verifyJWT(env.trust_level_RESTRICTED, user_sent_token, function(err, decoded) {
 		if (err) {
 			callback(true, err, null);
 		}
 		else if (!(decoded.email === reqBody.email_plain)) {
 			logger.error("accountService.createAccount: EMAIL SWAP - %s != %s", decoded.email, reqBody.email_plain);
+			callback(true, contracts.EmailSwap_Error, null);
+		}
+		else {
+			var userInfo = JSON.stringify(reqBody.user_info);
+			// comparing encrypted values
+			db.query("CALL isUserInDatabase(?)", [reqBody.email], function(err1, qr1){
+				if(err1) {
+					logger.error("accountService.createAccount: isUserInDatabase(sql): ", err1);
+					callback(true, contracts.DB_Access_Error, null);
+				}
+				else {
+					if (qr1[0].length > 0) {
+						logger.warn("accountService.createAccount: user email \'%s\' already in use", reqBody.email_plain);
+						callback(true, contracts.Username_Taken, null);
+					}
+					else {
+						// Make Payment
+						paymentService.make_oneTime_payment(reqBody.email_plain, reqBody.stripe_token, function(pay_err, charge){
+							if (pay_err) {
+								callback(true, "Stripe Payment Error: "+JSON.stringify(pay_err), null);
+							}
+							else {
+								// here we are storing the encrypted values...
+								db.query("Call addUser(?,?,?)", [reqBody.email, reqBody.password, userInfo], function (err2, qr2) {
+									if(err2) {
+										// here if dbService is busted or constraint fails, right?
+										logger.error("accountService.createAccount: addUser: ", err2);
+										callback(true, contracts.DB_Access_Error, null);
+									}
+									else {
+										if (qr2.affectedRows < 1 || qr2[0].length < 1) {
+											// We should never get here. right?
+											logger.warn("accountService.createAccount: FAILED to create account with user email \'%s\'", reqBody.email_plain);
+											callback(true, contracts.Username_Taken, null);
+										}
+										else {
+											cipherService.decrypt(qr2[0][0].email, function(crypt_err1, decrypted_email){
+												if (crypt_err1) {
+													callback(true, crypt_err1, null);
+												} 
+												else {
+													authService.generateJWT(env.trust_level_FULL, {'email':decrypted_email, 'u_id':qr2[0][0].u_id}, function(err3, jwtoken) {
+														if (err3) {
+															callback(true, err3, null);
+														}
+														else {
+															logger.info("accountService.createAccount: created account for %s", reqBody.email_plain);
+															contracts.egress(
+																{'email':qr2[0][0].email, 'user_info':qr2[0][0].user_info}, // encrypted values!
+																contracts.createAccount,
+																function(crypt_err2, resp_data){
+																	if (crypt_err2){
+																		callback(true, crypt_err2, null); // failed to decrypt the pii
+																	}
+																	else {
+																		callback(false, {'data':resp_data, 'status':contracts.NewAcct_Success}, jwtoken);
+																	}
+																}
+															);
+															
+															// NOW, do some auto-population of some fields
+															moduleService.autoPopulate_userModStatus(qr2[0][0].u_id);
+														}
+													});
+												}
+											});
+										}
+									}
+								});
+								
+							}
+						});
+						
+					}
+				}
+			});
+			
+		}
+	});
+}
+
+
+/*
+	DEV endpoint(s)
+*/
+
+// createAccount_DEV does not use payment
+exports.createAccount_DEV = function(user_sent_token, reqBody, callback){
+	authService.verifyJWT(env.trust_level_RESTRICTED, user_sent_token, function(err, decoded) {
+		if (err) {
+			callback(true, err, null);
+		}
+		else if (!(decoded.email === reqBody.email_plain)) {
+			logger.error("accountService.createAccount_DEV: EMAIL SWAP - %s != %s", decoded.email, reqBody.email_plain);
 			callback(true, contracts.EmailSwap_Error, null);
 		}
 		else {

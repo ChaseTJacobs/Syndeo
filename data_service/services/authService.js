@@ -18,7 +18,7 @@ get_jwt_secret = function(utc_time, callback){
 		secret = env.default_secret;
 		logger.error("authService.get_jwt_secret: failure. using default secret. err = ", exception);
 	}
-	logger.info("authService.get_jwt_secret: success. using secret \'%s\'", secret);
+	// logger.info("authService.get_jwt_secret: success. using secret \'%s\'", secret);
 	callback(secret);		
 }
 test_rotation = function(){	
