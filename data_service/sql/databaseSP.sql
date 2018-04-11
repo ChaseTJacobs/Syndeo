@@ -67,7 +67,7 @@ DELIMITER ;
 select '...procedure create - addUser' AS '';
 DROP PROCEDURE IF EXISTS addUser;
 DELIMITER //
-CREATE PROCEDURE addUser(IN pEmail VARCHAR(64), uPass VARCHAR(64), pUserInfo VARCHAR(64000))
+CREATE PROCEDURE addUser(IN pEmail VARCHAR(128), uPass VARCHAR(256), pUserInfo VARCHAR(16384))
 BEGIN
    INSERT INTO users(email, password, user_info) VALUES(pEmail, uPass, pUserInfo); 
    SELECT * FROM users WHERE email = pEmail AND password = uPass;

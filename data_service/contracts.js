@@ -54,8 +54,8 @@ exports.ingress = function(req, contract, callback){
 		example = {};
 	}
 	
-	// logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
-	logger.info("enforceContract: %s",(resp_obj.err ? "BAD" : "GOOD"));
+	logger.info("enforceContract: %s req body: ",(resp_obj.err ? "BAD" : "GOOD") ,req.body);
+	// logger.info("enforceContract: %s",(resp_obj.err ? "BAD" : "GOOD"));
 	callback(resp_obj.err, resp_obj, req);
 	
 }
