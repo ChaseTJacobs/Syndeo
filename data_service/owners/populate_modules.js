@@ -31,7 +31,7 @@ createModule = function(filename){
 
 		dbService.query(
 			"INSERT INTO modules(module_name, module_number, module_description, module_content) VALUES(?,?,?,?)",
-			[mod_obj.moduleName, mod_obj.moduleNumber, null/*replace with "mod_obj.description"*/, mod_str],
+			[mod_obj.moduleName, mod_obj.moduleNumber, mod_obj.intro, mod_str],
 			function(err, query_result) {
 				if (err || query_result.affectedRows < 1) {
 					console.log(JSON.stringify(err));
@@ -131,5 +131,13 @@ delete_iiScriptQ = function(id){
 	
 */
 
-editModule('mod2.json');
-editModule('mod4.json');
+//editModule('mod1.json');
+//editModule('mod2.json');
+//editModule('mod4.json');
+
+createActType('Email');
+createActType('Informational Interview');
+createActType('Phone Call');
+createActType('Meeting');
+createActType('Interview');
+createActType('Other');
